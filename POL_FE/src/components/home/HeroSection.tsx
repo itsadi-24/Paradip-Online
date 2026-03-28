@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { cn } from '@/lib/utils';
+import placeholderImg from '@/assets/placeholder.svg';
 
 export interface HeroSlide {
   id: number | string;
@@ -87,12 +88,14 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
             {/* Background Image */}
             <div className="absolute inset-0">
               <img
-                src={slide.image}
+                src={slide.image || placeholderImg}
                 alt={slide.title}
                 className={cn(
                   'w-full h-full object-cover object-center transition-transform duration-[8000ms] ease-linear',
                   index === currentSlide ? 'scale-110' : 'scale-100' // Subtle Ken Burns effect
                 )}
+                width={1920}
+                height={600}
               />
               {/* Professional Gradient Overlay - Improves text readability */}
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent" />
@@ -152,6 +155,7 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
             size="icon"
             variant="ghost"
             className="pointer-events-auto h-10 w-10 md:h-12 md:w-12 rounded-full text-white/30 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all duration-300 backdrop-blur-[2px]"
+            aria-label="Previous slide"
           >
             <ChevronLeft className="h-6 w-6 md:h-8 md:w-8 text-white/60 group-hover:text-white" />
           </Button>
@@ -160,6 +164,7 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
             size="icon"
             variant="ghost"
             className="pointer-events-auto h-10 w-10 md:h-12 md:w-12 rounded-full text-white/30 hover:text-white hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all duration-300 backdrop-blur-[2px]"
+            aria-label="Next slide"
           >
             <ChevronRight className="h-6 w-6 md:h-8 md:w-8 text-white/60 group-hover:text-white" />
           </Button>

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getServices, type Service } from '@/api/servicesApi';
+import placeholderImg from '@/assets/placeholder.svg';
 
 // Helper function to map icon names to icon components
 const getIconComponent = (iconName: string): LucideIcon => {
@@ -149,10 +150,12 @@ export function ServicesHighlight({ data }: ServicesHighlightProps) {
                 {/* Service Image Container */}
                 <div className="relative h-48 overflow-hidden bg-slate-100">
                   <img
-                    src={service.image || `https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800`}
+                    src={service.image || placeholderImg}
                     alt={service.title}
                     loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    width={800}
+                    height={600}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
 

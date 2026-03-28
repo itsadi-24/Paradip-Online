@@ -86,6 +86,8 @@ export function Header() {
                 src={logo}
                 alt="Paradeep Online Computer Service – Your Trusted IT Navigator"
                 className="h-16 w-auto object-contain"
+                width={160}
+                height={64}
               />
             </div>
           </Link>
@@ -119,6 +121,7 @@ export function Header() {
             type="button"
             className="lg:hidden p-2 rounded-lg hover:bg-blue-50 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6 text-slate-700" />

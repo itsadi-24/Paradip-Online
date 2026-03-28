@@ -72,6 +72,8 @@ export function Footer() {
                   src={logo}
                   alt="Paradeep Online Computer Service – Your Trusted IT Navigator"
                   className="h-24 w-auto object-contain"
+                  width={214}
+                  height={96}
                 />
               </div>
             </Link>

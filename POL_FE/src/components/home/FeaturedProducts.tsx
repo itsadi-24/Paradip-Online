@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Phone, Heart, ShoppingBag, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import placeholderImg from '@/assets/placeholder.svg';
 import {
   Tooltip,
   TooltipContent,
@@ -97,10 +98,12 @@ export function FeaturedProducts({ data }: FeaturedProductsProps) {
               <div className="relative aspect-[4/5] bg-secondary/30 overflow-hidden">
                 <Link to={`/product/${product.id}`}>
                   <img
-                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/400'}
+                    src={product.images?.[0] || product.image || placeholderImg}
                     alt={product.name}
                     loading="lazy"
                     className="w-full h-full object-cover mix-blend-multiply opacity-95 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500 ease-in-out cursor-pointer"
+                    width={400}
+                    height={500}
                   />
                 </Link>
 
@@ -119,7 +122,7 @@ export function FeaturedProducts({ data }: FeaturedProductsProps) {
                 )}
 
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full shadow-md bg-white/90 hover:bg-white">
+                  <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full shadow-md bg-white/90 hover:bg-white" aria-label="Add to favorites">
                     <Heart className="h-4 w-4 text-muted-foreground hover:text-red-500 transition-colors" />
                   </Button>
                 </div>
