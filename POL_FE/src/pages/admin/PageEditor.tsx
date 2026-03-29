@@ -322,6 +322,7 @@ const PageEditor = () => {
                                                                         <div className="space-y-4">
                                                                             <div className="flex items-center justify-between">
                                                                                 <Label className="text-sm font-bold text-slate-700 uppercase tracking-tighter">Slide Image</Label>
+                                                                                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-tight">Rec: 1920x1080px (16:9)</span>
                                                                             </div>
                                                                             <div className="relative group/img aspect-video rounded-xl overflow-hidden border bg-slate-50">
                                                                                 {slide.image ? (

@@ -10,6 +10,8 @@ export interface Product {
   inStock?: boolean;
   specs?: string[];
   description: string;
+  importedAt?: string;
+  source?: string;
 }
 
 export const products: Product[] = [

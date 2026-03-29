@@ -13,6 +13,9 @@ export interface Settings {
     supportPhone: string;
     complaintsPhone: string;
   };
+  gaMeasurementId?: string;
+  clarityProjectId?: string;
+  gaPropertyId?: string;
 }
 
 export const getSettings = () => get<Settings>('settings');

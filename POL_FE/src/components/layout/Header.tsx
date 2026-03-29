@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo-paradeep-online.svg';
 import { useSettings } from '@/contexts/SettingsContext';
+import { trackEvent } from '@/lib/analytics';
 
 
 
@@ -111,7 +112,11 @@ export function Header() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3 relative">
-            <Button className="bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all font-semibold" asChild>
+            <Button 
+              className="bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transition-all font-semibold" 
+              asChild
+              onClick={() => trackEvent('Navigation', 'Click Get Support')}
+            >
               <Link to="/support">Get Support</Link>
             </Button>
           </div>

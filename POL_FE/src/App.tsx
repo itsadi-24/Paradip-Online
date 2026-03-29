@@ -10,6 +10,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
 
 import ScrollToTop from './components/ScrollToTop';
+import AnalyticsProvider from './components/AnalyticsProvider';
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/admin/AdminLayout';
 import ProtectedRoute from './components/admin/ProtectedRoute';
@@ -44,6 +45,7 @@ const Login = lazy(() => import('./pages/admin/Login'));
 const Pages = lazy(() => import('./pages/admin/Pages'));
 const PageEditor = lazy(() => import('./pages/admin/PageEditor'));
 const Categories = lazy(() => import('./pages/admin/Categories'));
+const AdminAnalytics = lazy(() => import('./pages/admin/Analytics'));
 
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 
@@ -119,6 +121,7 @@ function AppRoutes() {
           <Route path="pages" element={<Pages />} />
           <Route path="pages/:name" element={<PageEditor />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="analytics" element={<AdminAnalytics />} />
           <Route path="settings" element={<Settings />} />
         </Route>
 
@@ -134,12 +137,14 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
       <BrowserRouter>
-        <ScrollToTop />
         <AuthProvider>
           <SettingsProvider>
-            <AppRoutes />
-            <Toaster />
-            <Sonner />
+            <AnalyticsProvider>
+              <ScrollToTop />
+              <AppRoutes />
+              <Toaster />
+              <Sonner />
+            </AnalyticsProvider>
           </SettingsProvider>
         </AuthProvider>
       </BrowserRouter>

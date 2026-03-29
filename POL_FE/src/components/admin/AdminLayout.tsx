@@ -13,6 +13,7 @@ import {
   User,
   FileText, // Changed from FileType to FileText
   Tags, // Added Tags icon
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,8 @@ const AdminLayout = () => {
     { icon: HeadphonesIcon, label: "Tickets", path: "/admin/tickets" },
     { icon: BookOpen, label: "Blogs", path: "/admin/blogs" },
     { icon: FileText, label: "Pages", path: "/admin/pages" },
-    { icon: Tags, label: "Categories", path: "/admin/categories" }, // Added Categories
+    { icon: Tags, label: "Categories", path: "/admin/categories" },
+    { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
     { icon: Settings, label: "Settings", path: "/admin/settings" },
   ];
 

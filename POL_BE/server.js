@@ -16,6 +16,8 @@ const settingsRoutes = require('./routes/settings');
 const uploadRoutes = require('./routes/upload');
 const pagesRoutes = require('./routes/pages');
 const categoriesRoutes = require('./routes/categories');
+const analyticsRoutes = require('./routes/analytics');
+const aiRoutes = require('./routes/ai');
 
 const path = require('path');
 
@@ -57,6 +59,8 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/pages', pagesRoutes);
 app.use('/api/categories', categoriesRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

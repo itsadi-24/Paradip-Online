@@ -22,6 +22,8 @@ export interface Ticket {
   status: "Open" | "Diagnosing" | "In Progress" | "Awaiting Parts" | "Ready for Pickup" | "Closed" | "Cancelled";
   date: string;
   comment?: string;
+  technicianAssigned?: string;
+  remarks?: string;
   history?: {
     status: string;
     note: string;

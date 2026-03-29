@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Check, Clock, MessageSquare, MoreHorizontal, User, Loader2, Search, ArrowUpDown, Send, Plus, Phone, Laptop, Shield, Upload, ImageIcon, Copy, Mail, FileText, Calendar, History, Trash2 } from "lucide-react";
+import { 
+  Check, Clock, MessageSquare, MoreHorizontal, User, Loader2, Search, ArrowUpDown, Send, Plus, Phone, Laptop, Shield, Upload, ImageIcon, Copy, Mail, FileText, Calendar, History, Trash2, ClipboardList, Monitor, Settings2, Info, CheckCircle2, IndianRupee, Sparkles, RefreshCw 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +38,7 @@ import {
 import { uploadImages } from "@/api/apiClient";
 import { Badge } from "@/components/ui/badge";
 import { getTickets, updateTicket, createTicket, Ticket } from "@/api/ticketsApi";
+import { getRepairRoadmap, RepairRoadmap } from "@/api/aiApi";
 import { useToast } from "@/hooks/use-toast";
 
 const Tickets = () => {
@@ -55,6 +58,9 @@ const Tickets = () => {
   const [commentText, setCommentText] = useState("");
   const [historyNote, setHistoryNote] = useState("");
   const [saving, setSaving] = useState(false);
+  
+  const [roadmap, setRoadmap] = useState<RepairRoadmap | null>(null);
+  const [loadingRoadmap, setLoadingRoadmap] = useState(false);
 
   const [repeatCustomerTickets, setRepeatCustomerTickets] = useState<Ticket[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -71,6 +77,8 @@ const Tickets = () => {
     images: [],
     date: new Date().toISOString().split('T')[0],
     password: Math.random().toString(36).slice(-6).toUpperCase(),
+    technicianAssigned: "",
+    remarks: "",
   });
 
   useEffect(() => {
@@ -98,7 +106,6 @@ const Tickets = () => {
     setLoading(false);
   };
 
-  // Filter by search query (ID or customer name)
   const filteredTickets = tickets.filter((ticket) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -108,14 +115,12 @@ const Tickets = () => {
     );
   });
 
-  // Sort tickets
   const sortedTickets = [...filteredTickets].sort((a, b) => {
     if (sortBy === "priority") {
       const priorityOrder = { High: 3, Medium: 2, Low: 1 };
       const diff = priorityOrder[a.priority] - priorityOrder[b.priority];
       return sortOrder === "desc" ? -diff : diff;
     } else {
-      // Sort by date
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
@@ -152,11 +157,11 @@ const Tickets = () => {
     } else {
       toast({ title: "Success", description: "Repair job card created successfully." });
       setCreateDialogOpen(false);
-      // Reset form
       setNewTicket({
         jobCardNo: "", subject: "", customer: "", phone: "", email: "", priority: "Medium", status: "Open",
         gadget: { brand: "", model: "", productName: "", serial: "", condition: "" }, images: [],
-        date: new Date().toISOString().split('T')[0], password: Math.random().toString(36).slice(-6).toUpperCase()
+        date: new Date().toISOString().split('T')[0], password: Math.random().toString(36).slice(-6).toUpperCase(),
+        technicianAssigned: "", remarks: ""
       });
       loadTickets();
     }
@@ -230,6 +235,20 @@ const Tickets = () => {
     setCommentText("");
   };
 
+  const handleGenerateRoadmap = async () => {
+    if (!selectedTicket) return;
+    setLoadingRoadmap(true);
+    setRoadmap(null);
+    const { data, error } = await getRepairRoadmap(selectedTicket);
+    if (error) {
+      toast({ title: "Intelligence Failure", description: error, variant: "destructive" });
+    } else if (data) {
+      setRoadmap(data);
+      toast({ title: "Roadmap Generated", description: "Strategic troubleshooting guide is now active." });
+    }
+    setLoadingRoadmap(false);
+  };
+
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
@@ -269,12 +288,11 @@ const Tickets = () => {
             Manage customer support requests ({tickets.length} tickets)
           </p>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="mr-2 h-4 w-4" /> Create New Ticket
+        <Button onClick={() => setCreateDialogOpen(true)} className="bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-100 font-bold rounded-xl px-6">
+          <Plus className="mr-2 h-4 w-4" /> Create New Job Card
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-card p-4 rounded-lg border shadow-sm">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -382,157 +400,106 @@ const Tickets = () => {
                 </TableCell>
               </TableRow>
             ))}
-            {sortedTickets.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                  No tickets found.
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </div>
 
       {/* Create Ticket Dialog */}
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent className="sm:max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>Create New Repair Job Card</DialogTitle>
-            <DialogDescription>
-              Fill in customer and gadget details to generate a new tracking ID.
-            </DialogDescription>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-0 shadow-2xl">
+          <DialogHeader className="bg-amber-600 text-white p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                <ClipboardList className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold">New Repair Job Card</DialogTitle>
+                <DialogDescription className="text-amber-100 text-xs mt-0.5">
+                  Establish a formal technical entry and tracking ID for service.
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <User className="h-4 w-4" /> Customer Information
-              </h3>
 
-              <div className="space-y-2">
-                <Label htmlFor="ph">Phone Number (Required for Tracking)</Label>
-                <Input id="ph" value={newTicket.phone} onChange={(e) => setNewTicket({ ...newTicket, phone: e.target.value })} placeholder="Mobile Number" className="!pl-3" autoComplete="new-password" />
-              </div>
-
-              {repeatCustomerTickets.length > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-                  <div className="flex items-center gap-2 text-amber-800">
-                    <History className="h-4 w-4" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Repeat Customer Found ({repeatCustomerTickets.length})</span>
+          <div className="p-8 grid grid-cols-2 gap-8 bg-white">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2 border-b pb-1">
+                  <User className="h-4 w-4 text-amber-600" /> Customer Information
+                </h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="ph" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Phone Number *</Label>
+                    <Input id="ph" value={newTicket.phone} onChange={(e) => setNewTicket({ ...newTicket, phone: e.target.value })} placeholder="Mobile Number" className="h-11 rounded-xl border-slate-200 focus:border-amber-500 font-medium" />
                   </div>
-                  <div className="text-xs text-amber-900 space-y-1 max-h-24 overflow-y-auto">
-                    {repeatCustomerTickets.map(t => (
-                      <div key={t.id} className="flex justify-between items-center bg-white/50 p-1.5 rounded">
-                        <span className="font-medium truncate w-24" title={t.customer}>{t.customer}</span>
-                        <span className="text-[10px] text-muted-foreground">{t.date}</span>
-                        <Badge variant="outline" className="text-[9px] tabular-nums whitespace-nowrap bg-white">{t.status}</Badge>
+                  {repeatCustomerTickets.length > 0 && (
+                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-3 shadow-sm">
+                      <div className="flex items-center gap-2 text-amber-800 text-[10px] font-black uppercase tracking-widest leading-none">
+                        <History className="h-3 w-3 animate-pulse" /> Repeat Client Detected
                       </div>
-                    ))}
+                      <Button variant="outline" size="sm" className="w-full text-[10px] h-8 bg-white border-amber-200 text-amber-700 font-bold rounded-lg hover:bg-amber-100 transition-colors" onClick={() => setNewTicket({ ...newTicket, customer: repeatCustomerTickets[0].customer, email: repeatCustomerTickets[0].email || "" })}>
+                        Autofill: {repeatCustomerTickets[0].customer}
+                      </Button>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="cust" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Client Full Name *</Label>
+                    <Input id="cust" value={newTicket.customer} onChange={(e) => setNewTicket({ ...newTicket, customer: e.target.value })} placeholder="Full Name" className="h-11 rounded-xl border-slate-200 focus:border-amber-500 font-medium" />
                   </div>
-                  <Button variant="outline" size="sm" className="w-full text-xs h-7 mt-2 bg-white hover:bg-amber-100 text-amber-900 border-amber-300" onClick={() => setNewTicket({ ...newTicket, customer: repeatCustomerTickets[0].customer, email: repeatCustomerTickets[0].email || "" })}>
-                    Autofill Name & Email
-                  </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</Label>
+                    <Input id="email" type="email" value={newTicket.email} onChange={(e) => setNewTicket({ ...newTicket, email: e.target.value })} placeholder="Optional" className="h-11 rounded-xl border-slate-200 focus:border-amber-500" />
+                  </div>
                 </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="cust" className="ml-1">Customer Name</Label>
-                <Input id="cust" value={newTicket.customer} onChange={(e) => setNewTicket({ ...newTicket, customer: e.target.value })} placeholder="Full name" className="!pl-3" autoComplete="new-password" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email (Optional)</Label>
-                <Input id="email" type="email" value={newTicket.email} onChange={(e) => setNewTicket({ ...newTicket, email: e.target.value })} placeholder="customer@email.com" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="jobCardNo">Physical Job Card No (Optional)</Label>
-                <Input id="jobCardNo" value={newTicket.jobCardNo} onChange={(e) => setNewTicket({ ...newTicket, jobCardNo: e.target.value })} placeholder="Leave blank to auto-generate" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="postDate">Job Posting Date</Label>
-                <Input type="date" id="postDate" value={newTicket.date} onChange={(e) => setNewTicket({ ...newTicket, date: e.target.value })} />
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <Laptop className="h-4 w-4" /> Gadget & Issue Details
-              </h3>
-              <div className="space-y-2">
-                <Label htmlFor="subj">Subject / Issue Summary</Label>
-                <Input id="subj" value={newTicket.subject} onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })} placeholder="e.g. Broken Screen" />
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-1 col-span-1">
-                  <Label className="text-[10px]">Product</Label>
-                  <Input className="h-8 text-xs" value={newTicket.gadget?.productName} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, productName: e.target.value } })} placeholder="Laptop" />
-                </div>
-                <div className="space-y-1 col-span-1">
-                  <Label className="text-[10px]">Brand</Label>
-                  <Input className="h-8 text-xs" value={newTicket.gadget?.brand} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, brand: e.target.value } })} placeholder="Apple" />
-                </div>
-                <div className="space-y-1 col-span-1">
-                  <Label className="text-[10px]">Model</Label>
-                  <Input className="h-8 text-xs" value={newTicket.gadget?.model} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, model: e.target.value } })} placeholder="iPhone 13" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ser" className="text-xs">Serial Number</Label>
-                <Input id="ser" className="h-8 text-xs" value={newTicket.gadget?.serial} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, serial: e.target.value } })} placeholder="SN-XXXXX" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cond" className="text-xs">Received Condition</Label>
-                <Textarea id="cond" className="text-xs" value={newTicket.gadget?.condition} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, condition: e.target.value } })} placeholder="Scratches on back, no power..." rows={2} />
-              </div>
-
-              <div className="space-y-2 pt-2 border-t">
-                <Label className="flex items-center gap-2 text-xs">
-                  <ImageIcon className="h-4 w-4 text-muted-foreground" /> Upload Device Photos
-                </Label>
-                <div className="flex items-center gap-2">
-                  <Input id="image-upload" type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
-                  <Button type="button" variant="outline" size="sm" className="w-full text-xs" onClick={() => document.getElementById('image-upload')?.click()} disabled={uploadingImages}>
-                    {uploadingImages ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                    Select Images
-                  </Button>
-                </div>
-                {newTicket.images && newTicket.images.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {newTicket.images.map((img, i) => (
-                      <div key={i} className="relative group">
-                        <img src={img} alt="Upload" className="h-12 w-12 object-cover rounded border" />
-                        <button type="button" onClick={() => setNewTicket(prev => ({ ...prev, images: prev.images?.filter((_, index) => index !== i) }))} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2 border-b pb-1">
+                  <Laptop className="h-4 w-4 text-amber-600" /> Device & Issue
+                </h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="subj" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Primary Fault *</Label>
+                    <Input id="subj" value={newTicket.subject} onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })} placeholder="e.g. Screen Replacement" className="h-11 rounded-xl border-slate-200 focus:border-amber-500 font-medium" />
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div className="col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
-                  <Shield className="h-5 w-5" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Brand</Label>
+                      <Input className="h-10 text-xs rounded-xl border-slate-200" placeholder="Brand" value={newTicket.gadget?.brand} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, brand: e.target.value } })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Model</Label>
+                      <Input className="h-10 text-xs rounded-xl border-slate-200" placeholder="Model" value={newTicket.gadget?.model} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, model: e.target.value } })} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Serial / IMEI #</Label>
+                    <Input className="h-11 text-xs font-mono rounded-xl bg-slate-50 border-dashed border-slate-300" placeholder="Serial / IMEI #" value={newTicket.gadget?.serial} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, serial: e.target.value } })} />
+                  </div>
+                  
+                  <div className="bg-slate-900 p-5 rounded-[2.5rem] text-white flex items-center justify-between shadow-xl shadow-slate-200 border-2 border-slate-800 mt-2">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 bg-white/10 rounded-xl flex items-center justify-center">
+                        <Shield className="h-5 w-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Tracking Secret</p>
+                        <p className="text-xl font-mono font-black text-amber-500 leading-none tracking-tight">{newTicket.password}</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-blue-900 uppercase">Tracking Password</p>
-                  <p className="text-lg font-mono font-bold text-blue-700">{newTicket.password}</p>
-                </div>
               </div>
-              <p className="text-[10px] text-blue-500 max-w-[200px] text-right">
-                Provide this password to the customer for live status tracking.
-              </p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleCreateTicket} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+
+          <DialogFooter className="p-6 bg-slate-50 border-t flex gap-3">
+            <Button variant="outline" onClick={() => setCreateDialogOpen(false)} className="rounded-xl px-8 h-12 font-bold flex-1 border-slate-200">Discard</Button>
+            <Button onClick={handleCreateTicket} disabled={saving} className="bg-amber-600 hover:bg-amber-700 shadow-xl shadow-amber-100 rounded-xl px-12 h-12 font-black uppercase tracking-widest flex-1">
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
-              Create Job Card
+              Generate Record
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -540,183 +507,228 @@ const Tickets = () => {
 
       {/* Manage Ticket Dialog */}
       <Dialog open={manageDialogOpen} onOpenChange={setManageDialogOpen}>
-        <DialogContent className="sm:max-w-4xl" onInteractOutside={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              Manage Job Card: <span className="font-mono text-blue-600">{selectedTicket?.jobCardNo || selectedTicket?.id}</span>
-            </DialogTitle>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-0 shadow-2xl">
+          <DialogHeader className="bg-blue-600 text-white p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                <Settings2 className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between pr-4">
+                  <DialogTitle className="text-xl font-bold">Repair Management Console</DialogTitle>
+                  <span className="font-mono text-[10px] font-black bg-white/20 px-3 py-1 rounded-full border border-white/20 uppercase tracking-tighter">
+                    Entry: {selectedTicket?.jobCardNo || selectedTicket?.id}
+                  </span>
+                </div>
+                <DialogDescription className="text-blue-100 text-xs mt-0.5">
+                  Strategic control and direct dispatch for <span className="text-white font-black">{selectedTicket?.customer}</span>
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
 
           {selectedTicket && (
-            <div className="grid grid-cols-3 gap-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
-              {/* Col 1: Status & Notes */}
-              <div className="space-y-4 col-span-1">
-                <div className="space-y-2">
-                  <Label>Current Status</Label>
+            <div className="p-8 grid grid-cols-3 gap-8 bg-white">
+              {/* Column 1: Workflow */}
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b pb-1">Operational Phase</h3>
                   <Select value={selectedTicket.status} onValueChange={(val: any) => setSelectedTicket({ ...selectedTicket, status: val })}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-12 font-bold rounded-2xl border-2 border-blue-50 bg-blue-50/30 text-blue-700 shadow-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Open">Open</SelectItem>
-                      <SelectItem value="Diagnosing">Diagnosing</SelectItem>
-                      <SelectItem value="In Progress">In Progress</SelectItem>
-                      <SelectItem value="Awaiting Parts">Awaiting Parts</SelectItem>
-                      <SelectItem value="Ready for Pickup">Ready for Pickup</SelectItem>
-                      <SelectItem value="Closed">Closed</SelectItem>
-                      <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
+                      <SelectItem value="Open">🔓 Received</SelectItem>
+                      <SelectItem value="Diagnosing">🔬 Diagnosing</SelectItem>
+                      <SelectItem value="In Progress">🛠 In Progress</SelectItem>
+                      <SelectItem value="Awaiting Parts">📦 Awaiting Parts</SelectItem>
+                      <SelectItem value="Ready for Pickup">🎁 Ready</SelectItem>
+                      <SelectItem value="Closed">🎉 Closed</SelectItem>
+                      <SelectItem value="Cancelled">⛔ Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="space-y-2 pt-4 border-t">
-                  <Label className="text-xs uppercase font-bold text-muted-foreground">Add Timeline Note</Label>
-                  <Textarea
-                    placeholder="Technician update (visible to customer)..."
+                <div className="p-5 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-4">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 px-1">
+                    <FileText className="h-3 w-3" /> Status Milestone
+                  </div>
+                  <Textarea 
+                    placeholder="Log technical milestones..." 
+                    className="h-32 resize-none rounded-2xl bg-white border-slate-200 text-xs p-4 shadow-inner" 
                     value={historyNote}
                     onChange={(e) => setHistoryNote(e.target.value)}
-                    rows={3}
                   />
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="w-full"
-                    onClick={() => {
-                      handleStatusChange(selectedTicket, selectedTicket.status, historyNote);
-                      setHistoryNote("");
-                      setManageDialogOpen(false);
-                    }}
-                  >
-                    Post History Update
+                  <Button size="sm" className="w-full bg-slate-900 rounded-xl font-black uppercase tracking-widest text-[10px] h-11 hover:bg-black transition-all" onClick={() => { handleStatusChange(selectedTicket, selectedTicket.status, historyNote); setHistoryNote(""); setManageDialogOpen(false); }}>
+                    Update Global Status
                   </Button>
                 </div>
               </div>
 
-              {/* Col 2: Gadget & Finance */}
-              <div className="space-y-4 col-span-1">
-                <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500">Gadget Specs</h4>
+              {/* Column 2: Details */}
+              <div className="space-y-6">
+                <div className="p-5 bg-blue-50/50 rounded-[2rem] border border-blue-100/50 space-y-4">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 border-b border-blue-200/30 pb-1">Technical Audit</h3>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label className="text-[10px]">Product</Label>
-                        <Input className="h-8 text-xs" value={selectedTicket.gadget?.productName} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, productName: e.target.value } })} />
+                      <div className="space-y-1">
+                        <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Brand</Label>
+                        <Input className="h-9 text-xs rounded-xl bg-white border-slate-200 font-medium" value={selectedTicket.gadget?.brand} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, brand: e.target.value } })} />
                       </div>
-                      <div>
-                        <Label className="text-[10px]">Brand</Label>
-                        <Input className="h-8 text-xs" value={selectedTicket.gadget?.brand} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, brand: e.target.value } })} />
+                      <div className="space-y-1">
+                        <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Model</Label>
+                        <Input className="h-9 text-xs rounded-xl bg-white border-slate-200 font-medium" value={selectedTicket.gadget?.model} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, model: e.target.value } })} />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label className="text-[10px]">Model</Label>
-                        <Input className="h-8 text-xs" value={selectedTicket.gadget?.model} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, model: e.target.value } })} />
-                      </div>
-                      <div>
-                        <Label className="text-[10px]">Serial</Label>
-                        <Input className="h-8 text-xs" value={selectedTicket.gadget?.serial} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, serial: e.target.value } })} />
-                      </div>
+                    <div className="space-y-1 pb-2">
+                       <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Serial / IMEI Identification</Label>
+                       <Input className="h-9 text-xs font-mono rounded-xl bg-white border-slate-200" value={selectedTicket.gadget?.serial} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, serial: e.target.value } })} />
+                    </div>
+
+                    <div className="pt-2 border-t border-blue-200/30">
+                        {!roadmap && !loadingRoadmap ? (
+                            <Button 
+                                type="button" 
+                                onClick={handleGenerateRoadmap}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg shadow-blue-100"
+                            >
+                                <Sparkles className="h-4 w-4" />
+                                Generate AI Repair Roadmap
+                            </Button>
+                        ) : loadingRoadmap ? (
+                            <div className="p-4 bg-white/50 border border-blue-100 rounded-2xl flex flex-col items-center justify-center gap-2">
+                                <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                                <span className="text-[9px] font-black uppercase text-blue-600 tracking-widest">Synthesizing Intelligence...</span>
+                            </div>
+                        ) : (
+                            <div className="space-y-3 bg-white p-4 rounded-2xl border border-blue-100 shadow-sm overflow-hidden relative">
+                                <div className="absolute top-0 right-0 p-2">
+                                    <Badge variant="outline" className="text-[7px] font-black border-blue-100 text-blue-500 bg-blue-50/50">AI GUIDANCE</Badge>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Probable Root Cause</p>
+                                    <p className="text-[11px] text-slate-700 font-bold leading-tight line-clamp-2">{roadmap?.probableCause}</p>
+                                </div>
+                                <div className="space-y-1.5 pt-2 border-t border-slate-50">
+                                    <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Execution Steps</p>
+                                    <ul className="space-y-1">
+                                        {roadmap?.restorationSteps.slice(0, 3).map((step, i) => (
+                                            <li key={i} className="text-[10px] text-slate-600 font-medium flex gap-2">
+                                                <span className="text-blue-400 font-black">{i+1}.</span> {step}
+                                            </li>
+                                        ))}
+                                        {(roadmap?.restorationSteps.length || 0) > 3 && (
+                                            <li className="text-[9px] text-blue-400 italic font-medium">+ View full roadmap for remaining steps</li>
+                                        )}
+                                    </ul>
+                                </div>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={handleGenerateRoadmap}
+                                    className="w-full h-7 text-[8px] font-black uppercase text-blue-400 hover:text-blue-600 hover:bg-blue-50 mt-1"
+                                >
+                                    <RefreshCw className="h-3 w-3 mr-1" /> Re-Analyze Problem
+                                </Button>
+                            </div>
+                        )}
                     </div>
                   </div>
                 </div>
-
-                <div className="space-y-3 bg-green-50 p-4 rounded-xl border border-green-200">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-green-700">Internal Finance (Hidden)</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-[10px] text-green-900">Estimated Price (₹)</Label>
-                      <Input type="number" className="h-8 text-xs border-green-300" value={selectedTicket.estimatedPrice} onChange={(e) => setSelectedTicket({ ...selectedTicket, estimatedPrice: Number(e.target.value) })} />
+                <div className="p-6 bg-emerald-600 rounded-[2.5rem] shadow-xl shadow-emerald-100 text-white space-y-4 border-4 border-emerald-500/30">
+                  <div className="flex items-center gap-2 border-b border-white/20 pb-2">
+                    <IndianRupee className="h-4 w-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Financial Summary</span>
+                  </div>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between bg-white/10 p-2 py-1.5 rounded-xl">
+                      <span className="text-[10px] font-black uppercase tracking-tight opacity-70">Estimate</span>
+                      <div className="flex items-center">
+                        <span className="text-xs mr-1 opacity-50 italic">₹</span>
+                        <Input type="number" className="h-7 w-20 bg-transparent border-0 text-white text-right font-black p-0 focus-visible:ring-0" value={selectedTicket.estimatedPrice} onChange={(e) => setSelectedTicket({ ...selectedTicket, estimatedPrice: Number(e.target.value) })} />
+                      </div>
                     </div>
-                    <div>
-                      <Label className="text-[10px] text-green-900">Advance Rcvd (₹)</Label>
-                      <Input type="number" className="h-8 text-xs border-green-300" value={selectedTicket.advanceReceived} onChange={(e) => setSelectedTicket({ ...selectedTicket, advanceReceived: Number(e.target.value) })} />
+                    <div className="flex items-center justify-between bg-white/10 p-2 py-1.5 rounded-xl">
+                      <span className="text-[10px] font-black uppercase tracking-tight opacity-70">Advance</span>
+                      <div className="flex items-center">
+                        <span className="text-xs mr-1 opacity-50 italic">₹</span>
+                        <Input type="number" className="h-7 w-20 bg-transparent border-0 text-white text-right font-black p-0 focus-visible:ring-0" value={selectedTicket.advanceReceived} onChange={(e) => setSelectedTicket({ ...selectedTicket, advanceReceived: Number(e.target.value) })} />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Col 3: Communication */}
-              <div className="space-y-4 col-span-1">
-                <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-blue-800 flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4" /> Customer Comms
-                  </h4>
-
-                  <div className="space-y-2 bg-white p-3 rounded border border-blue-100 text-xs text-slate-700">
-                    <p><strong>Name:</strong> {selectedTicket.customer}</p>
-                    <p><strong>Phone:</strong> {selectedTicket.phone}</p>
-                    <p><strong>Pass:</strong> <span className="font-mono bg-blue-100 px-1 rounded">{selectedTicket.password}</span></p>
-                  </div>
-
-                  <Button variant="default" className="w-full bg-blue-600 hover:bg-blue-700 text-xs h-8" onClick={copyCommunicationTemplate}>
-                    <Copy className="h-3 w-3 mr-2" />
-                    Copy WhatsApp Snippet
-                  </Button>
-
-                  {selectedTicket.email ? (
-                    <Button variant="outline" className="w-full text-xs h-8" asChild>
-                      <a href={generateEmailLink()}>
-                        <Mail className="h-3 w-3 mr-2 text-blue-600" />
-                        Notify via Email
-                      </a>
-                    </Button>
-                  ) : (
-                    <Button variant="outline" className="w-full text-xs h-8 text-muted-foreground" disabled title="No email address on file">
-                      <Mail className="h-3 w-3 mr-2" />
-                      No Email Provided
-                    </Button>
-                  )}
-
-                  <div className="pt-4 border-t border-blue-200">
-                    <Label className="text-[10px] text-blue-800">Rotate Tracking Password</Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input className="h-8 font-mono bg-white text-xs" value={selectedTicket.password} onChange={(e) => setSelectedTicket({ ...selectedTicket, password: e.target.value })} />
-                      <Button size="sm" variant="outline" className="h-8 bg-white" onClick={() => setSelectedTicket({ ...selectedTicket, password: Math.random().toString(36).slice(-6).toUpperCase() })}>Gen</Button>
+              {/* Column 3: Communication */}
+              <div className="space-y-6">
+                <div className="bg-slate-900 rounded-[2.5rem] p-6 text-white shadow-2xl shadow-slate-200 flex flex-col gap-6 border border-slate-800">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 border-b border-slate-800 pb-1">Client Dispatch</h4>
+                  <div className="space-y-4">
+                    <div className="bg-white/5 p-4 rounded-3xl border border-white/5 space-y-3">
+                      <div className="flex justify-between items-center text-[10px] px-1">
+                        <span className="opacity-40 uppercase font-black tracking-widest">Access Key</span>
+                        <span className="font-mono text-blue-400 font-black bg-blue-400/10 px-2 py-0.5 rounded border border-blue-400/20">{selectedTicket.password}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] px-1">
+                        <span className="opacity-40 uppercase font-black tracking-widest">Ph. Target</span>
+                        <span className="font-black text-slate-200">{selectedTicket.phone}</span>
+                      </div>
                     </div>
+                    <Button variant="outline" className="w-full bg-white text-slate-900 border-0 rounded-2xl font-black uppercase text-[10px] h-12 shadow-xl hover:bg-slate-50 transition-all scale-100 active:scale-95" onClick={copyCommunicationTemplate}>
+                      <Copy className="h-4 w-4 mr-2" /> Copy WhatsApp Snippet
+                    </Button>
                   </div>
                 </div>
+                <div className="space-y-2 px-1">
+                  <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Team Assignment</Label>
+                  <Input className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs italic font-medium px-4" value={selectedTicket.technicianAssigned} onChange={(e) => setSelectedTicket({ ...selectedTicket, technicianAssigned: e.target.value })} placeholder="Lead Technician Name" />
+                </div>
               </div>
-
             </div>
           )}
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setManageDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleUpdateManage} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
+          <DialogFooter className="p-6 bg-slate-50 border-t gap-3">
+            <Button variant="outline" onClick={() => setManageDialogOpen(false)} className="rounded-xl px-8 h-12 font-bold flex-1 border-slate-200 bg-white">Abort</Button>
+            <Button onClick={handleUpdateManage} disabled={saving} className="bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-100 rounded-xl px-12 h-12 font-black uppercase tracking-widest flex-1">
+              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+              Commit All Updates
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Comment Dialog */}
       <Dialog open={commentDialogOpen} onOpenChange={setCommentDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Comment to Ticket</DialogTitle>
-            <DialogDescription>
-              {selectedTicket && (
-                <>Ticket <span className="font-mono">{selectedTicket.id}</span> - {selectedTicket.subject}</>
-              )}
-            </DialogDescription>
+        <DialogContent className="max-w-md overflow-hidden rounded-3xl p-0 border-0 shadow-2xl">
+          <DialogHeader className="bg-blue-600 text-white p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                <MessageSquare className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold">Internal Remark</DialogTitle>
+                <DialogDescription className="text-blue-100 text-xs mt-0.5">
+                  {selectedTicket ? `Private log for Ticket ${selectedTicket.id}` : 'Record administrative context.'}
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="p-8 bg-white">
             <div className="space-y-2">
-              <Label htmlFor="comment">Your Comment</Label>
-              <Textarea
+              <Label htmlFor="comment" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Confidential Note</Label>
+              <Textarea 
                 id="comment"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Add a note or response for this ticket..."
-                rows={4}
+                value={commentText} 
+                onChange={(e) => setCommentText(e.target.value)} 
+                placeholder="Note down sensitive administrative details..." 
+                className="h-40 rounded-2xl p-4 bg-slate-50/50 border-slate-200 focus:border-blue-500 resize-none shadow-inner"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCommentDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSaveComment} disabled={saving}>
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              <Send className="mr-2 h-4 w-4" />
-              Save Comment
+          <DialogFooter className="p-6 bg-slate-50 border-t flex gap-3">
+            <Button variant="outline" onClick={() => setCommentDialogOpen(false)} className="rounded-xl px-6 h-11 font-bold flex-1 bg-white border-slate-200">Discard</Button>
+            <Button onClick={handleSaveComment} disabled={saving} className="bg-blue-600 hover:bg-blue-700 rounded-xl px-8 shadow-lg shadow-blue-100 h-11 font-black uppercase tracking-widest flex-1">
+              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+              Save Entry
             </Button>
           </DialogFooter>
         </DialogContent>

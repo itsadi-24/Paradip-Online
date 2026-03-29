@@ -43,6 +43,18 @@ const settingsSchema = new mongoose.Schema(
         type: String,
         default: "+91-7008700609"
       }
+    },
+    gaMeasurementId: {
+      type: String,
+      default: ""
+    },
+    clarityProjectId: {
+      type: String,
+      default: ""
+    },
+    gaPropertyId: {
+      type: String,
+      default: ""
     }
   },
   {

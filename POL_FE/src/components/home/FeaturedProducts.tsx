@@ -15,6 +15,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { getProducts } from '@/api/productsApi';
 import { Product } from '@/data/products';
 import { useSettings } from '@/contexts/SettingsContext';
+import { trackEvent } from '@/lib/analytics';
 
 interface FeaturedProductsProps {
   data?: {
@@ -122,7 +123,13 @@ export function FeaturedProducts({ data }: FeaturedProductsProps) {
                 )}
 
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full shadow-md bg-white/90 hover:bg-white" aria-label="Add to favorites">
+                  <Button 
+                    size="icon" 
+                    variant="secondary" 
+                    className="h-8 w-8 rounded-full shadow-md bg-white/90 hover:bg-white" 
+                    aria-label="Add to favorites"
+                    onClick={() => trackEvent('Product', 'Add to Favorites', product.name)}
+                  >
                     <Heart className="h-4 w-4 text-muted-foreground hover:text-red-500 transition-colors" />
                   </Button>
                 </div>
@@ -154,7 +161,11 @@ export function FeaturedProducts({ data }: FeaturedProductsProps) {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button className="flex-1 shadow-md shadow-primary/20" asChild>
+                    <Button 
+                      className="flex-1 shadow-md shadow-primary/20" 
+                      asChild
+                      onClick={() => trackEvent('Product', 'WhatsApp Inquiry', product.name)}
+                    >
                       <a href={`https://wa.me/91${salesPhonePlain}`} target="_blank" rel="noopener noreferrer">
                         <FaWhatsapp className="h-4 w-4" />
                         WhatsApp
@@ -164,7 +175,13 @@ export function FeaturedProducts({ data }: FeaturedProductsProps) {
                     <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button size="icon" variant="outline" className="border-primary/20 hover:bg-primary/5" asChild>
+                          <Button 
+                            size="icon" 
+                            variant="outline" 
+                            className="border-primary/20 hover:bg-primary/5" 
+                            asChild
+                            onClick={() => trackEvent('Product', 'Call Inquiry', product.name)}
+                          >
                             <a href={`tel:${salesPhonePlain}`}>
                               <Phone className="h-4 w-4" />
                             </a>

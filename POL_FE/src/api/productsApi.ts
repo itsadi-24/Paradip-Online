@@ -29,6 +29,12 @@ export async function createProduct(
     formData.append("specs", productData.specs.join(","));
   }
   formData.append("description", productData.description);
+  if (productData.importedAt) {
+    formData.append("importedAt", productData.importedAt);
+  }
+  if (productData.source) {
+    formData.append("source", productData.source);
+  }
   
   // Add existing image URLs (if any)
   if (productData.images && productData.images.length > 0) {

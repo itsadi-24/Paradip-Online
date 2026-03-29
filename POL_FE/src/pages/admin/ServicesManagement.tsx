@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Plus, Pencil, Trash2, Wrench, Monitor, Cpu, Truck, HardDrive, Network, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, Wrench, Monitor, Cpu, Truck, HardDrive, Network, ArrowUp, ArrowDown, Sparkles, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getServices, createService, updateService, patchService, deleteService, type Service } from '@/api/servicesApi';
 import { getCategories, type Category } from '@/api/categoryApi';
@@ -394,44 +394,55 @@ const ServicesManagement = () => {
 
       {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingService ? 'Edit Service' : 'Add New Service'}</DialogTitle>
-            <DialogDescription>
-              {editingService ? 'Update service details' : 'Create a new service card'}
-            </DialogDescription>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-0 shadow-2xl">
+          <DialogHeader className="bg-emerald-600 text-white p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                <Wrench className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold">
+                  {editingService ? 'Refine Service Portfolio' : 'Standardize New Service'}
+                </DialogTitle>
+                <DialogDescription className="text-emerald-100 text-xs mt-0.5">
+                  {editingService ? 'Update your service specifications for the digital catalog.' : 'Create a high-impact service entry for your clients.'}
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="p-8 space-y-6">
+            <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Service Designation *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., Hardware Repair"
+                  className="h-11 border-slate-200 rounded-xl font-medium focus:border-emerald-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price">Price *</Label>
+                <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Market Pricing *</Label>
                 <Input
                   id="price"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   placeholder="e.g., From ₹500"
+                  className="h-11 border-slate-200 rounded-xl font-bold focus:border-emerald-500"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Sector Assignment *</Label>
               <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger id="category">
+                <SelectTrigger id="category" className="h-11 border-slate-200 rounded-xl font-medium bg-slate-50/50">
                   <SelectValue placeholder="Select a Category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   {categories.length === 0 ? (
                     <SelectItem value="loading" disabled>Loading categories...</SelectItem>
                   ) : (
@@ -443,123 +454,129 @@ const ServicesManagement = () => {
               </Select>
             </div>
 
+            <div className="p-5 rounded-[2rem] bg-slate-50 border border-slate-100 space-y-4">
+              <div className="flex items-center gap-2 mb-2 px-1">
+                <Sparkles className="h-4 w-4 text-emerald-600" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Brand Identity Assets</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="icon" className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Visual Icon Type</Label>
+                  <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
+                    <SelectTrigger className="h-10 border-slate-200 rounded-xl bg-white shadow-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      {iconOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex items-center gap-2">
+                            <option.icon className="h-4 w-4" />
+                            <span className="text-xs font-medium">{option.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="color" className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Signature Accent</Label>
+                  <Select value={formData.color} onValueChange={(value) => setFormData({ ...formData, color: value })}>
+                    <SelectTrigger className="h-10 border-slate-200 rounded-xl bg-white shadow-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      {colorOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex items-center gap-2">
+                            <div className={`h-4 w-4 rounded-full ${option.class} shadow-sm border border-slate-100`}></div>
+                            <span className="text-xs font-medium">{option.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Brief Summary *</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Describe the service..."
-                rows={3}
+                placeholder="Describe the service value proposition..."
+                rows={2}
+                className="resize-none border-slate-200 rounded-xl focus:border-emerald-500 p-4"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Service Image URL</Label>
+              <div className="flex items-center justify-between px-1">
+                <Label htmlFor="image" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Main Digital Asset URL</Label>
+                <span className="text-[9px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-100/50 px-2 py-0.5 rounded-full">Rec: 16:9 Aspect</span>
+              </div>
               <Input
                 id="image"
                 value={formData.image}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 placeholder="https://images.unsplash.com/..."
+                className="h-11 border-slate-200 rounded-xl focus:border-emerald-500 italic bg-slate-50/30"
               />
-              <p className="text-[10px] text-muted-foreground">
-                Provide a high-quality image URL for the service card.
-              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="detailedDescription">Detailed Description (SEO Content) *</Label>
+            <div className="space-y-2 p-5 bg-emerald-50/40 rounded-[2rem] border border-emerald-100/50">
+              <div className="flex items-center justify-between mb-2 px-1">
+                <Label htmlFor="detailedDescription" className="text-[10px] font-black uppercase tracking-widest text-emerald-800">Operational Capability (Markdown)</Label>
+                <Info className="h-3 w-3 text-emerald-400" />
+              </div>
               <Textarea
                 id="detailedDescription"
                 value={formData.detailedDescription}
                 onChange={(e) => setFormData({ ...formData, detailedDescription: e.target.value })}
-                placeholder="Write a keyword-rich, detailed description for this service..."
-                rows={8}
+                placeholder="Write exhaustive, technical capability content here..."
+                rows={6}
+                className="bg-white border-emerald-100 rounded-xl focus:border-emerald-500 shadow-sm p-4"
               />
-              <p className="text-[10px] text-muted-foreground">
-                This content will appear on the individual service page and is crucial for SEO.
-              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="icon">Icon</Label>
-                <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {iconOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className="flex items-center gap-2">
-                          <option.icon className="h-4 w-4" />
-                          {option.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="color">Color Theme</Label>
-                <Select value={formData.color} onValueChange={(value) => setFormData({ ...formData, color: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {colorOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className="flex items-center gap-2">
-                          <div className={`h-4 w-4 rounded ${option.class}`}></div>
-                          {option.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Features (4 items)</Label>
-              {formData.features.map((feature, index) => (
-                <Input
-                  key={index}
-                  value={feature}
-                  onChange={(e) => updateFeature(index, e.target.value)}
-                  placeholder={`Feature ${index + 1}`}
-                />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between p-4 rounded-3xl border bg-white">
+                <div className="space-y-0.5">
+                  <Label htmlFor="popular" className="text-[11px] font-black uppercase tracking-widest text-slate-800">Priority Listing</Label>
+                  <p className="text-[10px] text-slate-400 italic font-medium">Flag as popular choice</p>
+                </div>
                 <Switch
                   id="popular"
                   checked={formData.popular}
                   onCheckedChange={(checked) => setFormData({ ...formData, popular: checked })}
+                  className="data-[state=checked]:bg-emerald-600 shadow-sm"
                 />
-                <Label htmlFor="popular">Mark as Popular</Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between p-4 rounded-3xl border border-emerald-100 bg-emerald-50/10">
+                <div className="space-y-0.5">
+                  <Label htmlFor="enabled" className="text-[11px] font-black uppercase tracking-widest text-slate-800">Live Status</Label>
+                  <p className="text-[10px] text-slate-400 italic font-medium">Visibility on storefront</p>
+                </div>
                 <Switch
                   id="enabled"
                   checked={formData.enabled}
                   onCheckedChange={(checked) => setFormData({ ...formData, enabled: checked })}
+                  className="data-[state=checked]:bg-emerald-600 shadow-sm"
                 />
-                <Label htmlFor="enabled">Enabled</Label>
               </div>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCloseDialog}>
+          <DialogFooter className="p-6 bg-slate-50 border-t flex gap-3">
+            <Button variant="outline" onClick={handleCloseDialog} className="rounded-xl px-8 h-12 font-bold flex-1 border-slate-200">
               Cancel
             </Button>
-            <Button onClick={handleSave}>
-              {editingService ? 'Update Service' : 'Create Service'}
+            <Button onClick={handleSave} className="bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-100 rounded-xl px-12 h-12 font-black uppercase tracking-widest flex-1">
+              {editingService ? 'Confirm Update' : 'Publish Service'}
             </Button>
           </DialogFooter>
         </DialogContent>

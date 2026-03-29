@@ -145,51 +145,64 @@ export default function Categories() {
 
                 <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
                     <DialogTrigger asChild>
-                        <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 rounded-xl font-bold px-6">
                             <Plus className="mr-2 h-4 w-4" /> Add Category
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>{editingCategory ? "Edit Category" : "Add Category"}</DialogTitle>
+                    <DialogContent className="sm:max-w-[425px] overflow-hidden rounded-3xl p-0 border-0 shadow-2xl">
+                        <DialogHeader className="bg-indigo-600 text-white p-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
+                                    <Tags className="h-5 w-5 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle className="text-xl font-bold">{editingCategory ? "Refine Category" : "New Category"}</DialogTitle>
+                                    <p className="text-indigo-100 text-xs mt-0.5">Organize your data with precision.</p>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
+                        <div className="p-6 space-y-5 bg-white">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Category Name</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Identity Name</label>
                                 <Input
                                     value={formData.name}
                                     onChange={(e) => handleInputChange("name", e.target.value)}
-                                    placeholder="e.g. Laptops"
+                                    placeholder="e.g. Laptops & Accessories"
+                                    className="h-11 border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/10 rounded-xl font-medium"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Section Map</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Target Section</label>
                                 <Select
                                     value={formData.section}
                                     onValueChange={(val) => handleInputChange("section", val)}
                                 >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select Section" />
+                                    <SelectTrigger className="h-11 border-slate-200 rounded-xl font-medium bg-slate-50/50">
+                                        <SelectValue placeholder="Mapping Section" />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Sales">Sales (Products)</SelectItem>
-                                        <SelectItem value="Service">Service</SelectItem>
-                                        <SelectItem value="Blog">Blog</SelectItem>
+                                    <SelectContent className="rounded-xl">
+                                        <SelectItem value="Sales">📦 Sales (Products)</SelectItem>
+                                        <SelectItem value="Service">🛠 Service Management</SelectItem>
+                                        <SelectItem value="Blog">✍️ Content / Blog</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Description</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Strategic Description</label>
                                 <Textarea
                                     value={formData.description}
                                     onChange={(e) => handleInputChange("description", e.target.value)}
-                                    placeholder="Short description..."
+                                    placeholder="Define the purpose of this category..."
+                                    className="resize-none h-24 border-slate-200 rounded-xl focus:border-indigo-500"
                                 />
                             </div>
                         </div>
-                        <DialogFooter>
-                            <Button onClick={handleCreateOrUpdate} className="bg-blue-600">
-                                {editingCategory ? "Save Changes" : "Create Category"}
+                        <DialogFooter className="p-6 bg-slate-50 border-t flex gap-2">
+                            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="rounded-xl px-6 font-bold flex-1 border-slate-200">
+                                Cancel
+                            </Button>
+                            <Button onClick={handleCreateOrUpdate} disabled={isLoading || !formData.name} className="bg-indigo-600 hover:bg-indigo-700 rounded-xl px-8 font-bold flex-1 shadow-lg shadow-indigo-100">
+                                {isLoading ? "Syncing..." : (editingCategory ? "Update" : "Establish")}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
