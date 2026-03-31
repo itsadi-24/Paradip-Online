@@ -11,7 +11,7 @@ const fs = require('fs');
  */
 const getAnalyticsClient = () => {
   const keyPath = path.join(__dirname, '../service-account.json');
-  
+
   if (!fs.existsSync(keyPath)) {
     console.warn('⚠️ service-account.json not found. Falling back to mock data.');
     return null;
@@ -104,11 +104,11 @@ router.get('/overview', async (req, res) => {
     let totalUsers = 0;
     let totalSessions = 0;
     let totalDuration = 0;
-    
+
     const history = response.rows.map(row => {
       const dateStr = row.dimensionValues[0].value;
       const formattedDate = `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
-      
+
       const users = parseInt(row.metricValues[0].value || 0, 10);
       const sessions = parseInt(row.metricValues[1].value || 0, 10);
       const durationSeconds = parseFloat(row.metricValues[2].value || 0);
@@ -116,7 +116,7 @@ router.get('/overview', async (req, res) => {
       totalUsers += users;
       totalSessions += sessions;
       totalDuration += durationSeconds * sessions; // approximate total duration to calculate average
-      
+
       return {
         date: formattedDate,
         users,
@@ -208,7 +208,7 @@ router.get('/behavior', async (req, res) => {
       const region = row.dimensionValues[1].value;
       const val = parseInt(row.metricValues[0].value || 0, 10);
       totalGeoUsers += val;
-      
+
       let label = country;
       if (country === 'India') {
         label = region === 'Odisha' ? 'Odisha, India' : 'Other, India';
@@ -282,7 +282,7 @@ router.get('/content', async (req, res) => {
       const path = row.dimensionValues[0].value;
       const name = row.dimensionValues[1].value;
       const views = parseInt(row.metricValues[0].value || 0, 10).toLocaleString();
-      
+
       const durationSeconds = parseFloat(row.metricValues[1].value || 0);
       const minutes = Math.floor(durationSeconds / 60);
       const seconds = Math.floor(durationSeconds % 60);
