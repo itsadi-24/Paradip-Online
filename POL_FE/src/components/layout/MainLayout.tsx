@@ -45,7 +45,7 @@ const MainLayout = () => {
       <Footer />
 
       <aside aria-label="Quick Access">
-        <Sidebar enabled={settings?.showSidebar ?? true} />
+        <Sidebar enabled={true} />
       </aside>
     </div>
   );

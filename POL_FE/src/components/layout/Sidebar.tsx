@@ -27,6 +27,14 @@ export function Sidebar({ enabled = true }: SidebarProps) {
   const { settings } = useSettings();
   const isTicketingEnabled = settings?.enableTicketing ?? true;
 
+  const contact = {
+    address: settings?.contactDefaults?.address || "Paradeep Online Computer Service,\nUnit -1, Badapadia, Vijay Market,\nParadip, Odisha, India - 754142",
+    email: settings?.contactDefaults?.email || "mail@paradiponline.com",
+    salesPhone: settings?.contactDefaults?.salesPhone || "+91-9583839432",
+    supportPhone: settings?.contactDefaults?.supportPhone || "+91-9439869690",
+    complaintsPhone: settings?.contactDefaults?.complaintsPhone || "+91-7008700609"
+  };
+
   if (!enabled) return null;
 
   return (
@@ -100,7 +108,7 @@ export function Sidebar({ enabled = true }: SidebarProps) {
               </h3>
               <div className="space-y-3">
                 <a
-                  href="tel:+919876543210"
+                  href={`tel:${contact.supportPhone.toString().replace(/[\s-]/g, '')}`}
                   className="group flex items-center p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-blue-200 hover:shadow-md transition-all duration-300"
                 >
                   <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
@@ -111,14 +119,14 @@ export function Sidebar({ enabled = true }: SidebarProps) {
                       Call Support
                     </p>
                     <p className="text-xs text-slate-500">
-                      Available 9 AM - 9 PM
+                      {contact.supportPhone}
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                 </a>
 
                 <a
-                  href="https://wa.me/919876543210"
+                  href={`https://wa.me/${contact.salesPhone.toString().replace(/[\s\-\+]/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-green-200 hover:shadow-md transition-all duration-300"
@@ -131,14 +139,14 @@ export function Sidebar({ enabled = true }: SidebarProps) {
                       WhatsApp
                     </p>
                     <p className="text-xs text-slate-500">
-                      Fastest response time
+                      {contact.salesPhone}
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-green-600 group-hover:translate-x-1 transition-all" />
                 </a>
 
                 <a
-                  href="mailto:help@example.com"
+                  href={`mailto:${contact.email}`}
                   className="group flex items-center p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-red-200 hover:shadow-md transition-all duration-300"
                 >
                   <div className="h-10 w-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
@@ -149,7 +157,7 @@ export function Sidebar({ enabled = true }: SidebarProps) {
                       Email Us
                     </p>
                     <p className="text-xs text-slate-500">
-                      For complex queries
+                      {contact.email}
                     </p>
                   </div>
                   <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-red-600 group-hover:translate-x-1 transition-all" />

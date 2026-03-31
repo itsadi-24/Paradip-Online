@@ -25,7 +25,7 @@ const path = require('path');
 const app = express();
 
 // Serve static uploads folder locally
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
 connectDB();

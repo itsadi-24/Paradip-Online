@@ -8,11 +8,11 @@ const settingsSchema = new mongoose.Schema(
     },
     showSidebar: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     enableTicketing: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     maintenanceMode: {
       type: Boolean,

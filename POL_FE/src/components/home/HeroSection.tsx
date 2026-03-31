@@ -79,7 +79,7 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
       <div className="relative h-[450px] sm:h-[550px] lg:h-[600px] w-full overflow-hidden">
         {heroSlides.map((slide, index) => (
           <div
-            key={slide.id}
+            key={slide.id || index}
             className={cn(
               'absolute inset-0 transition-opacity duration-1000 ease-in-out',
               index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
@@ -88,7 +88,7 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
             {/* Background Image */}
             <div className="absolute inset-0">
               <img
-                src={slide.image || placeholderImg}
+                src={slide.image && !slide.image.startsWith('http') && !slide.image.startsWith('/') ? `/api/uploads/${slide.image}` : (slide.image || placeholderImg)}
                 alt={slide.title}
                 className={cn(
                   'w-full h-full object-cover object-center transition-transform duration-[8000ms] ease-linear',
@@ -208,7 +208,7 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
               
               return (
                 <div
-                  key={i}
+                  key={feature.title || i}
                   className="flex-1 flex items-center md:justify-center lg:justify-start gap-4 px-6 py-5 md:py-6 lg:px-10"
                 >
                   <div className="h-12 w-12 rounded-[14px] bg-[#EEF2FC] flex items-center justify-center shrink-0">
