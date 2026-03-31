@@ -44,6 +44,13 @@ router.put('/', authMiddleware, async (req, res) => {
       settings.enableTicketing = req.body.enableTicketing ?? settings.enableTicketing;
       settings.maintenanceMode = req.body.maintenanceMode ?? settings.maintenanceMode;
       settings.headlines = req.body.headlines ?? settings.headlines;
+
+      if (req.body.contactDefaults) {
+        settings.contactDefaults = { ...settings.contactDefaults, ...req.body.contactDefaults };
+      }
+      if (req.body.gaMeasurementId !== undefined) settings.gaMeasurementId = req.body.gaMeasurementId;
+      if (req.body.clarityProjectId !== undefined) settings.clarityProjectId = req.body.clarityProjectId;
+      if (req.body.gaPropertyId !== undefined) settings.gaPropertyId = req.body.gaPropertyId;
     }
     const updatedSettings = await settings.save();
     res.json(updatedSettings);

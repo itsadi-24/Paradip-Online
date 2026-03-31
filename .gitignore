@@ -19,3 +19,7 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Secrets
+service-account.json
+POL_BE/service-account.json

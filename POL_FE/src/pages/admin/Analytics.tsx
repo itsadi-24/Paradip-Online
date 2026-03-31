@@ -11,7 +11,9 @@ import {
   Globe, 
   TrendingUp,
   RefreshCcw,
-  ArrowUpRight
+  ArrowUpRight,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +34,16 @@ import {
   Bar,
   Cell
 } from "recharts";
-import { getRealtimeData, getAnalyticsOverview, type RealtimeData, type AnalyticsOverview } from "@/api/analyticsApi";
+import { 
+  getRealtimeData, 
+  getAnalyticsOverview, 
+  getAnalyticsBehavior,
+  getAnalyticsContent,
+  type RealtimeData, 
+  type AnalyticsOverview,
+  type BehaviorData,
+  type ContentData
+} from "@/api/analyticsApi";
 
 const Analytics = () => {
   const { toast } = useToast();
@@ -43,10 +54,15 @@ const Analytics = () => {
   const [clarityId, setClarityId] = useState("");
   const [propertyId, setPropertyId] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showGaId, setShowGaId] = useState(false);
+  const [showPropId, setShowPropId] = useState(false);
+  const [showClarityId, setShowClarityId] = useState(false);
 
   // Data State
   const [realtime, setRealtime] = useState<RealtimeData | null>(null);
   const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
+  const [behavior, setBehavior] = useState<BehaviorData | null>(null);
+  const [content, setContent] = useState<ContentData | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
@@ -66,12 +82,16 @@ const Analytics = () => {
   const fetchDashboardData = async () => {
     setDataLoading(true);
     try {
-      const [rt, ov] = await Promise.all([
+      const [rt, ov, beh, cn] = await Promise.all([
         getRealtimeData(),
-        getAnalyticsOverview()
+        getAnalyticsOverview(),
+        getAnalyticsBehavior(),
+        getAnalyticsContent()
       ]);
       if (rt.data) setRealtime(rt.data);
       if (ov.data) setOverview(ov.data);
+      if (beh.data) setBehavior(beh.data);
+      if (cn.data) setContent(cn.data);
     } catch (error) {
       console.error("Dashboard fetch error:", error);
     } finally {
@@ -273,11 +293,7 @@ const Analytics = () => {
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={[
-                                { name: 'Mobile', val: 65 },
-                                { name: 'Desktop', val: 32 },
-                                { name: 'Tablet', val: 3 }
-                            ]}>
+                            <BarChart data={behavior?.device || []}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
                                 <Tooltip cursor={{fill: 'transparent'}} />
@@ -297,11 +313,7 @@ const Analytics = () => {
                         <CardDescription>Where your audience lives</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {[
-                            { country: 'Odisha, India', users: '1,240', p: 85 },
-                            { country: 'Other, India', users: '180', p: 12 },
-                            { country: 'International', users: '45', p: 3 },
-                        ].map((loc, i) => (
+                        {(behavior?.geography || []).map((loc, i) => (
                             <div key={i} className="space-y-1">
                                 <div className="flex justify-between text-sm font-medium">
                                     <span>{loc.country}</span>
@@ -334,13 +346,7 @@ const Analytics = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                            {[
-                                { path: '/', name: 'Home', views: '1,420', time: '1m 24s' },
-                                { path: '/services', name: 'Services', views: '980', time: '2m 10s' },
-                                { path: '/support', name: 'Get Support', views: '654', time: '4m 05s' },
-                                { path: '/sales', name: 'Shop', views: '430', time: '1m 15s' },
-                                { path: '/blog/computer-maintenance', name: 'Blog: PC Care', views: '320', time: '3m 45s' },
-                            ].map((row, i) => (
+                            {(content?.pages || []).map((row, i) => (
                                 <tr key={i} className="hover:bg-muted/20 transition-colors">
                                     <td className="p-4">
                                         <div className="flex flex-col">
@@ -369,8 +375,16 @@ const Analytics = () => {
                         <div className="p-2 bg-blue-50 rounded-lg">
                             <BarChart3 className="h-6 w-6 text-blue-600" />
                         </div>
-                        <div>
-                            <CardTitle>Google Analytics 4</CardTitle>
+                        <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                                <CardTitle>Google Analytics 4</CardTitle>
+                                <div className="flex items-center gap-2">
+                                    <div className={`h-2 w-2 rounded-full ${gaId && propertyId ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-slate-300'}`} />
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                                        {gaId && propertyId ? 'Connected' : 'Pending'}
+                                    </span>
+                                </div>
+                            </div>
                             <CardDescription>Track traffic and dashboard data.</CardDescription>
                         </div>
                         </div>
@@ -379,23 +393,43 @@ const Analytics = () => {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="ga-id">Measurement ID (Frontend)</Label>
-                                <Input
-                                    id="ga-id"
-                                    placeholder="G-XXXXXXXXXX"
-                                    value={gaId}
-                                    onChange={(e) => setGaId(e.target.value)}
-                                    className="font-mono text-sm"
-                                />
+                                <div className="relative group/input">
+                                    <Input
+                                        id="ga-id"
+                                        type={showGaId ? "text" : "password"}
+                                        placeholder="G-XXXXXXXXXX"
+                                        value={gaId}
+                                        onChange={(e) => setGaId(e.target.value)}
+                                        className="font-mono text-sm pr-10"
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowGaId(!showGaId)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {showGaId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="prop-id">Property ID (Dashboard API)</Label>
-                                <Input
-                                    id="prop-id"
-                                    placeholder="123456789"
-                                    value={propertyId}
-                                    onChange={(e) => setPropertyId(e.target.value)}
-                                    className="font-mono text-sm"
-                                />
+                                <div className="relative group/input">
+                                    <Input
+                                        id="prop-id"
+                                        type={showPropId ? "text" : "password"}
+                                        placeholder="123456789"
+                                        value={propertyId}
+                                        onChange={(e) => setPropertyId(e.target.value)}
+                                        className="font-mono text-sm pr-10"
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowPropId(!showPropId)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {showPropId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
                                 <p className="text-[10px] text-muted-foreground italic">
                                     Required to pull "Real Results" into this dashboard.
                                 </p>
@@ -433,8 +467,16 @@ const Analytics = () => {
                         <div className="p-2 bg-indigo-50 rounded-lg">
                             <MousePointer2 className="h-6 w-6 text-indigo-600" />
                         </div>
-                        <div>
-                            <CardTitle>Microsoft Clarity</CardTitle>
+                        <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                                <CardTitle>Microsoft Clarity</CardTitle>
+                                <div className="flex items-center gap-2">
+                                    <div className={`h-2 w-2 rounded-full ${clarityId ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-slate-300'}`} />
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                                        {clarityId ? 'Connected' : 'Pending'}
+                                    </span>
+                                </div>
+                            </div>
                             <CardDescription>Visual heatmaps and recordings.</CardDescription>
                         </div>
                         </div>
@@ -442,13 +484,23 @@ const Analytics = () => {
                     <CardContent className="space-y-6">
                         <div className="space-y-2">
                         <Label htmlFor="clarity-id">Project ID</Label>
-                        <Input
-                            id="clarity-id"
-                            placeholder="xxxxxxxxxx"
-                            value={clarityId}
-                            onChange={(e) => setClarityId(e.target.value)}
-                            className="font-mono text-sm"
-                        />
+                        <div className="relative group/input">
+                            <Input
+                                id="clarity-id"
+                                type={showClarityId ? "text" : "password"}
+                                placeholder="xxxxxxxxxx"
+                                value={clarityId}
+                                onChange={(e) => setClarityId(e.target.value)}
+                                className="font-mono text-sm pr-10"
+                            />
+                            <button 
+                                type="button"
+                                onClick={() => setShowClarityId(!showClarityId)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                {showClarityId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                        </div>
                         <p className="text-[10px] text-muted-foreground italic">
                             Found in Clarity Settings &gt; Setup.
                         </p>
