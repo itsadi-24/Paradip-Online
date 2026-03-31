@@ -2,17 +2,27 @@ const express = require('express');
 const router = express.Router();
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
 const Settings = require('../models/Settings');
+const path = require('path');
+const fs = require('fs');
 
 /**
  * Helper to get GA4 Client
- * Requires GOOGLE_APPLICATION_CREDENTIALS environment variable or a JSON key
+ * Uses the service-account.json file if present in the backend folder
  */
 const getAnalyticsClient = () => {
-  // If no credentials provided, this will fail gracefully
+  const keyPath = path.join(__dirname, '../service-account.json');
+  
+  if (!fs.existsSync(keyPath)) {
+    console.warn('⚠️ service-account.json not found. Falling back to mock data.');
+    return null;
+  }
+
   try {
-    return new BetaAnalyticsDataClient();
+    return new BetaAnalyticsDataClient({
+      keyFilename: keyPath,
+    });
   } catch (error) {
-    console.warn('⚠️ Analytics Client not initialized: Missing credentials.');
+    console.error('❌ Error initializing Analytics Client:', error.message);
     return null;
   }
 };
