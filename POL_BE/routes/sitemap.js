@@ -250,7 +250,6 @@ router.get('/', async (req, res) => {
     res.set({
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
-      'X-Robots-Tag': 'noindex',
     });
     res.status(200).send(xml);
 
