@@ -3,6 +3,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { ScrollingHeadline } from "./ScrollingHeadline";
 import { Sidebar } from "./Sidebar";
+import { SalesTriggers } from "../home/SalesTriggers";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useState, useEffect } from "react";
 import { pagesApi, Page } from "@/api/pagesApi";
@@ -46,6 +47,7 @@ const MainLayout = () => {
 
       <aside aria-label="Quick Access">
         <Sidebar enabled={true} />
+        <SalesTriggers />
       </aside>
     </div>
   );

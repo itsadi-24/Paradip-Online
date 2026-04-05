@@ -51,6 +51,12 @@ router.put('/', authMiddleware, async (req, res) => {
       if (req.body.gaMeasurementId !== undefined) settings.gaMeasurementId = req.body.gaMeasurementId;
       if (req.body.clarityProjectId !== undefined) settings.clarityProjectId = req.body.clarityProjectId;
       if (req.body.gaPropertyId !== undefined) settings.gaPropertyId = req.body.gaPropertyId;
+
+      // AI Social Proof Settings
+      if (req.body.enableAiSocialProof !== undefined) settings.enableAiSocialProof = req.body.enableAiSocialProof;
+      if (req.body.aiSocialProofInterval !== undefined) settings.aiSocialProofInterval = req.body.aiSocialProofInterval;
+      if (req.body.showAiCloseButton !== undefined) settings.showAiCloseButton = req.body.showAiCloseButton;
+      if (req.body.aiSocialProofMode !== undefined) settings.aiSocialProofMode = req.body.aiSocialProofMode;
     }
     const updatedSettings = await settings.save();
     res.json(updatedSettings);

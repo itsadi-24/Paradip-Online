@@ -72,7 +72,7 @@ const faqs = [
 const Support = () => {
   const { toast } = useToast();
   const { settings } = useSettings();
-  const [ticketSearch, setTicketSearch] = useState('');
+  const [trackPhone, setTrackPhone] = useState('');
   const [trackPassword, setTrackPassword] = useState('');
   const [isTracking, setIsTracking] = useState(false);
   const [trackingResult, setTrackingResult] = useState<TicketType | null>(null);
@@ -96,21 +96,20 @@ const Support = () => {
   });
 
   const handleTrackStatus = async () => {
-    if (!ticketSearch) {
-      toast({ title: "Error", description: "Please enter a Ticket ID", variant: "destructive" });
+    if (!trackPhone) {
+      toast({ title: "Error", description: "Please enter your Mobile Number", variant: "destructive" });
       return;
     }
-
-    setIsTracking(true);
-    const { data, error } = await trackTicket(ticketSearch, ""); // We need a way to get phone/pass
-    // Simplified: Show a dialog to enter phone/pass if not already provided
     setTrackingOpen(true);
-    setIsTracking(false);
   };
 
-  const handleDetailedTrack = async (phone: string, pass: string) => {
+  const handleDetailedTrack = async () => {
+    if (!trackPhone || !trackPassword) {
+       toast({ title: "Validation Error", description: "Check your Mobile Number and Secret Tracking Code", variant: "destructive" });
+       return;
+    }
     setIsTracking(true);
-    const { data, error } = await trackTicket(ticketSearch, phone, pass);
+    const { data, error } = await trackTicket("", trackPhone, trackPassword);
     if (error) {
       toast({ title: "Tracking Failed", description: error, variant: "destructive" });
     } else if (data) {
@@ -181,22 +180,21 @@ const Support = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <Input
                   className="pl-10 h-12 border-0 bg-transparent text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 text-base font-mono"
-                  placeholder="Ticket ID (e.g. TCK-1001)"
-                  value={ticketSearch}
-                  onChange={(e) => setTicketSearch(e.target.value.toUpperCase())}
+                  placeholder="Mobile Number (e.g. 9876543210)"
+                  value={trackPhone}
+                  onChange={(e) => setTrackPhone(e.target.value)}
                 />
               </div>
               <Button
                 size="lg"
                 onClick={handleTrackStatus}
-                disabled={isTracking}
                 className="h-12 px-8 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-md shadow-blue-600/20"
               >
-                {isTracking ? <Loader2 className="h-4 w-4 animate-spin" /> : "Track Status"}
+                Track Status
               </Button>
             </div>
             <p className="mt-4 text-slate-400 text-sm">
-              Enter your ticket ID to check repair status or technician notes.
+              Enter your registered mobile number to check repair status.
             </p>
           </div>
         </div>
@@ -493,42 +491,42 @@ const Support = () => {
               <DialogHeader className="mb-6">
                 <DialogTitle className="text-2xl font-bold flex items-center gap-2">
                   <ShieldCheck className="h-6 w-6 text-blue-600" />
-                  Verify Tracking
+                  Secure Status Access
                 </DialogTitle>
-                <p className="text-slate-500">
-                  Please enter the phone number and security password associated with Ticket <span className="font-mono font-bold text-slate-900">{ticketSearch}</span> to continue.
+                <p className="text-slate-500 text-sm">
+                  Enter your registered mobile and tracking secret to authenticate.
                 </p>
               </DialogHeader>
-
+ 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="track-phone">Phone Number</Label>
+                  <Label htmlFor="track-phone" className="text-xs uppercase font-black text-slate-400">Mobile Number</Label>
                   <Input
                     id="track-phone"
-                    placeholder="+91..."
-                    className="h-12 rounded-xl bg-slate-50"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Enter Phone Number"
+                    className="h-12 rounded-xl bg-slate-50 font-bold"
+                    value={trackPhone}
+                    onChange={(e) => setTrackPhone(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="track-pass">Security Password (Fixed)</Label>
+                  <Label htmlFor="track-pass" className="text-xs uppercase font-black text-slate-400">Secret Tracking Code</Label>
                   <Input
                     id="track-pass"
                     type="password"
-                    placeholder="Enter password from Job Card"
-                    className="h-12 rounded-xl bg-slate-50"
+                    placeholder="Found on your job card"
+                    className="h-12 rounded-xl bg-slate-50 font-bold"
                     value={trackPassword}
                     onChange={(e) => setTrackPassword(e.target.value)}
                   />
                 </div>
                 <Button
-                  className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold"
-                  onClick={() => handleDetailedTrack(formData.phone, trackPassword)}
+                  className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold uppercase tracking-widest text-sm"
+                  onClick={handleDetailedTrack}
                   disabled={isTracking}
                 >
                   {isTracking ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Verify & View Status
+                  Authenticate & View
                 </Button>
               </div>
             </div>

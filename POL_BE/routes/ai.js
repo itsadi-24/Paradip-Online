@@ -1,7 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const groqService = require('../services/groqService');
-const { getSettings } = require('../models/Settings');
+const Settings = require('../models/Settings');
+
+/**
+ * STRATEGIC PILLAR: Dynamic Social Proof
+ * Uses Groq AI to generate realistic local activity for the shop.
+ */
+router.get('/social-proof', async (req, res) => {
+    console.log("HIT: GET /api/ai/social-proof");
+    try {
+        const settings = await Settings.getSettings();
+        console.log("AI SETTINGS:", { 
+            enabled: settings.enableAiSocialProof, 
+            mode: settings.aiSocialProofMode 
+        });
+        const data = await groqService.generateSocialProof(settings.aiSocialProofMode || 'synthesis');
+        res.json(data);
+    } catch (error) {
+        console.error("Social Proof API Error:", error);
+        res.json([
+            { name: 'Customer from Paradip', action: 'booked a Repair', time: 'Just now' }
+        ]);
+    }
+});
 
 // Route for autonomous brand discovery based on category
 router.get('/brands', async (req, res) => {

@@ -33,8 +33,13 @@ const ticketSchema = new mongoose.Schema(
       brand: String,
       model: String,
       productName: String, // e.g., Laptop, Printer
+      productType: String, // e.g., Mobile, Desktop, CCTV, GPS
       serial: String,
       condition: String,
+    },
+    remarks: {
+      type: String,
+      default: '',
     },
     images: {
       type: [String], // Array of Cloudinary WebP URLs

@@ -12,7 +12,10 @@ import {
   FileText,
   ShoppingBag,
   MessageSquare,
+  Sparkles,
+  Wrench,
 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -173,7 +176,7 @@ export function Sidebar({ enabled = true }: SidebarProps) {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { title: 'Track Ticket', icon: Ticket, href: '/support' },
-                  { title: 'Book Repair', icon: WrenchIcon, href: '/services' }, // Defined icon below
+                  { title: 'Book Repair', icon: Wrench, href: '/services' }, 
                   { title: 'Shop Parts', icon: ShoppingBag, href: '/sales' },
                   { title: 'FAQs', icon: HelpCircle, href: '/support' },
                 ].map((item) => (
@@ -192,27 +195,54 @@ export function Sidebar({ enabled = true }: SidebarProps) {
               </div>
             </section>
 
+            {/* Exclusive Offer Card - Leads Magnet */}
+            <section>
+              <div className="relative group overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-700 p-6 text-white shadow-xl shadow-blue-900/20">
+                {/* Background Sparkle Icons */}
+                <Icons.Sparkles className="absolute -right-4 -top-4 h-24 w-24 text-white/10 rotate-12" />
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-tighter mb-4 animate-bounce">
+                    Limited Reward
+                  </div>
+                  <h3 className="text-xl font-bold leading-tight mb-2">
+                    Get <span className="text-yellow-300">20% Flat OFF</span> On First Repair
+                  </h3>
+                  <p className="text-sm text-blue-50/80 leading-relaxed mb-6 font-medium">
+                    Valid for all laptop & PC service booking via WhatsApp today!
+                  </p>
+                  
+                  <Button 
+                    variant="secondary" 
+                    className="w-full h-11 bg-white text-blue-700 hover:bg-yellow-400 hover:text-slate-900 font-bold transition-all"
+                    asChild
+                  >
+                    <a href={`https://wa.me/91${contact.salesPhone.toString().replace(/[\s\-\+]/g, '')}?text=Hi, I want to claim my 20% discount on my first repair.`}>
+                      <Icons.Ticket className="h-4 w-4 mr-2" />
+                      Claim My Coupon
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </section>
+
             {/* Hours Card (Clean Version) */}
             <section>
-              <div className="bg-slate-900 rounded-xl p-5 text-white relative overflow-hidden">
-                {/* Decorative Circle */}
-                <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-
+              <div className="bg-slate-900/5 rounded-xl p-5 border border-slate-200 relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-4 relative z-10">
                   <Clock className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-bold tracking-wide">
+                  <span className="text-sm font-bold tracking-wide text-slate-900">
                     Business Hours
                   </span>
                 </div>
 
                 <div className="space-y-3 relative z-10 text-sm">
-                  <div className="flex justify-between border-b border-white/10 pb-2">
-                    <span className="text-slate-400">Mon - Sat</span>
-                    <span className="font-medium">10:00 AM - 9:00 PM</span>
+                  <div className="flex justify-between border-b border-slate-200 pb-2">
+                    <span className="text-slate-500">Mon - Sat</span>
+                    <span className="font-semibold text-slate-900">10:00 AM - 9:00 PM</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Sunday</span>
-                    <span className="font-medium text-primary">
+                    <span className="text-slate-500">Sunday</span>
+                    <span className="font-semibold text-primary">
                       Open 10AM - 10PM
                     </span>
                   </div>
@@ -238,25 +268,5 @@ export function Sidebar({ enabled = true }: SidebarProps) {
         </div>
       </aside>
     </>
-  );
-}
-
-// Helper component for the icon used above
-function WrenchIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-    </svg>
   );
 }

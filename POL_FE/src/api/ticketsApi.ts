@@ -11,6 +11,7 @@ export interface Ticket {
     brand: string;
     model: string;
     productName?: string;
+    productType?: string;
     serial: string;
     condition: string;
   };

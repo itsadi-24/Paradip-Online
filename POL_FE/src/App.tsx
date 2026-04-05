@@ -37,6 +37,7 @@ const CctvSolutions = lazy(() => import('./pages/seo/CctvSolutions'));
 
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const Settings = lazy(() => import('./pages/admin/Settings'));
+const AiSettings = lazy(() => import('./pages/admin/AiSettings'));
 const Products = lazy(() => import('./pages/admin/Products'));
 const Tickets = lazy(() => import('./pages/admin/Tickets'));
 const Blogs = lazy(() => import('./pages/admin/Blogs'));
@@ -122,6 +123,7 @@ function AppRoutes() {
           <Route path="pages/:name" element={<PageEditor />} />
           <Route path="categories" element={<Categories />} />
           <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="ai-settings" element={<AiSettings />} />
           <Route path="settings" element={<Settings />} />
         </Route>
 

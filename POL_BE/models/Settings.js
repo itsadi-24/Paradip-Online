@@ -55,7 +55,25 @@ const settingsSchema = new mongoose.Schema(
     gaPropertyId: {
       type: String,
       default: ""
-    }
+    },
+    // AI Social Proof Settings
+    enableAiSocialProof: {
+      type: Boolean,
+      default: true,
+    },
+    aiSocialProofInterval: {
+      type: Number,
+      default: 90, // seconds
+    },
+    showAiCloseButton: {
+      type: Boolean,
+      default: true,
+    },
+    aiSocialProofMode: {
+      type: String,
+      enum: ['synthesis', 'real_data'],
+      default: 'synthesis',
+    },
   },
   {
     timestamps: true,

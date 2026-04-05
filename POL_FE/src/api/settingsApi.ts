@@ -16,6 +16,10 @@ export interface Settings {
   gaMeasurementId?: string;
   clarityProjectId?: string;
   gaPropertyId?: string;
+  enableAiSocialProof?: boolean;
+  aiSocialProofInterval?: number;
+  showAiCloseButton?: boolean;
+  aiSocialProofMode?: 'synthesis' | 'real_data';
 }
 
 export const getSettings = () => get<Settings>('settings');

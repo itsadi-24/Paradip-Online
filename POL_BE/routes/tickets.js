@@ -11,10 +11,9 @@ router.post('/track', async (req, res) => {
   console.log('Tracking request:', { ticketId, phone });
   try {
     const ticket = await Ticket.findOne({
-      $or: [{ ticketId: ticketId }, { jobCardNo: ticketId }],
       phone,
       password: password || '123456'
-    });
+    }).sort({ createdAt: -1 });
 
     if (!ticket) {
       return res.status(404).json({ message: 'No matching ticket found with these credentials. Please check your Ticket ID, Phone, and Password.' });

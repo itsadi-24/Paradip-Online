@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://paradiponline.com/api/sitemap.xml
+Sitemap: https://www.paradiponline.com/sitemap.xml

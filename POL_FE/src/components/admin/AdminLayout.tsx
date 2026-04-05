@@ -14,6 +14,7 @@ import {
   FileText, // Changed from FileType to FileText
   Tags, // Added Tags icon
   BarChart3,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ const AdminLayout = () => {
     { icon: FileText, label: "Pages", path: "/admin/pages" },
     { icon: Tags, label: "Categories", path: "/admin/categories" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
+    { icon: Brain, label: "AI Control", path: "/admin/ai-settings" },
     { icon: Settings, label: "Settings", path: "/admin/settings" },
   ];
 

@@ -73,7 +73,7 @@ const Tickets = () => {
     email: "",
     priority: "Medium",
     status: "Open",
-    gadget: { brand: "", model: "", productName: "", serial: "", condition: "" },
+    gadget: { brand: "", model: "", productName: "", productType: "", serial: "", condition: "" },
     images: [],
     date: new Date().toISOString().split('T')[0],
     password: Math.random().toString(36).slice(-6).toUpperCase(),
@@ -437,7 +437,22 @@ const Tickets = () => {
                       <div className="flex items-center gap-2 text-amber-800 text-[10px] font-black uppercase tracking-widest leading-none">
                         <History className="h-3 w-3 animate-pulse" /> Repeat Client Detected
                       </div>
-                      <Button variant="outline" size="sm" className="w-full text-[10px] h-8 bg-white border-amber-200 text-amber-700 font-bold rounded-lg hover:bg-amber-100 transition-colors" onClick={() => setNewTicket({ ...newTicket, customer: repeatCustomerTickets[0].customer, email: repeatCustomerTickets[0].email || "" })}>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-[10px] h-8 bg-white border-amber-200 text-amber-700 font-bold rounded-lg hover:bg-amber-100 transition-colors" 
+                        onClick={() => setNewTicket({ 
+                          ...newTicket, 
+                          customer: repeatCustomerTickets[0].customer, 
+                          email: repeatCustomerTickets[0].email || "",
+                          gadget: {
+                            ...newTicket.gadget!,
+                            brand: repeatCustomerTickets[0].gadget?.brand || "",
+                            model: repeatCustomerTickets[0].gadget?.model || "",
+                            productType: repeatCustomerTickets[0].gadget?.productType || ""
+                          }
+                        })}
+                      >
                         Autofill: {repeatCustomerTickets[0].customer}
                       </Button>
                     </div>
@@ -464,6 +479,10 @@ const Tickets = () => {
                     <Label htmlFor="subj" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Primary Fault *</Label>
                     <Input id="subj" value={newTicket.subject} onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })} placeholder="e.g. Screen Replacement" className="h-11 rounded-xl border-slate-200 focus:border-amber-500 font-medium" />
                   </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Product Category / Type</Label>
+                    <Input className="h-11 rounded-xl border-slate-200 focus:border-amber-500 font-medium" placeholder="e.g. Laptop, Mobile, Printer, CCTV" value={newTicket.gadget?.productType} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, productType: e.target.value } })} />
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Brand</Label>
@@ -477,6 +496,10 @@ const Tickets = () => {
                   <div className="space-y-1">
                     <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Serial / IMEI #</Label>
                     <Input className="h-11 text-xs font-mono rounded-xl bg-slate-50 border-dashed border-slate-300" placeholder="Serial / IMEI #" value={newTicket.gadget?.serial} onChange={(e) => setNewTicket({ ...newTicket, gadget: { ...newTicket.gadget!, serial: e.target.value } })} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Administrative Remarks</Label>
+                    <Textarea className="h-20 text-xs rounded-xl border-slate-200 resize-none" placeholder="Internal notes (optional)" value={newTicket.remarks} onChange={(e) => setNewTicket({ ...newTicket, remarks: e.target.value })} />
                   </div>
                   
                   <div className="bg-slate-900 p-5 rounded-[2.5rem] text-white flex items-center justify-between shadow-xl shadow-slate-200 border-2 border-slate-800 mt-2">
@@ -579,9 +602,19 @@ const Tickets = () => {
                         <Input className="h-9 text-xs rounded-xl bg-white border-slate-200 font-medium" value={selectedTicket.gadget?.model} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, model: e.target.value } })} />
                       </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-2">
+                       <div className="space-y-1">
+                        <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Serial / IMEI Identification</Label>
+                        <Input className="h-9 text-xs font-mono rounded-xl bg-white border-slate-200" value={selectedTicket.gadget?.serial} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, serial: e.target.value } })} />
+                       </div>
+                       <div className="space-y-1">
+                        <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Product Type</Label>
+                        <Input className="h-9 text-xs rounded-xl bg-white border-slate-200" value={selectedTicket.gadget?.productType} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, productType: e.target.value } })} />
+                       </div>
+                    </div>
                     <div className="space-y-1 pb-2">
-                       <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Serial / IMEI Identification</Label>
-                       <Input className="h-9 text-xs font-mono rounded-xl bg-white border-slate-200" value={selectedTicket.gadget?.serial} onChange={(e) => setSelectedTicket({ ...selectedTicket, gadget: { ...selectedTicket.gadget!, serial: e.target.value } })} />
+                       <Label className="text-[8px] font-black uppercase tracking-tighter text-slate-400 ml-1">Internal Remarks</Label>
+                       <Textarea className="h-16 text-xs rounded-xl bg-white border-slate-200 resize-none" value={selectedTicket.remarks} onChange={(e) => setSelectedTicket({ ...selectedTicket, remarks: e.target.value })} />
                     </div>
 
                     <div className="pt-2 border-t border-blue-200/30">

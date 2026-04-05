@@ -40,10 +40,10 @@ export function HeroSection({ slides = [], features = [] }: HeroSectionProps) {
   const heroSlides = slides;
 
   const heroFeatures =  [
-    { icon: 'ShieldCheck', title: 'Warranty', desc: '30-Day Guarantee' },
-    { icon: 'Wrench', title: 'Expert Techs', desc: 'Certified Team' },
-    { icon: 'Zap', title: 'Fast Service', desc: 'Same Day Repair' },
-    { icon: 'Headphones', title: 'Support', desc: '24/7 Assistance' },
+    { icon: 'ShieldCheck', title: 'Guaranteed Fix', desc: 'Or 100% Refund' },
+    { icon: 'Award', title: 'Top Rated Service', desc: '5000+ Happy Clients' },
+    { icon: 'Zap', title: 'Express Repair', desc: 'Fix in 2 Hours' },
+    { icon: 'HeartHandshake', title: 'Free Inspection', desc: 'Zero Cost Diagnosis' },
   ];
 
   // Auto-advance logic

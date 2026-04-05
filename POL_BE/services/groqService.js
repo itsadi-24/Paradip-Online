@@ -142,7 +142,48 @@ class GroqService {
       return JSON.parse(chatCompletion.choices[0].message.content);
     } catch (error) {
       console.error("Brand Discovery Error:", error);
-      return { brands: ["HP", "Dell", "Lenovo", "ASUS", "Acer", "Samsung"] };
+      throw error;
+    }
+  }
+
+  async generateSocialProof(mode = 'synthesis') {
+    const client = this._getClient();
+    
+    let prompt = "";
+    if (mode === 'synthesis') {
+      prompt = `Act as a Marketing Psychologist for a tech retail & repair shop in Paradip, Odisha.
+      Generate 5 highly realistic, diverse social proof "activities" that make the shop look busy and trusted.
+      Use local names (from Odisha/India) and local areas (Paradip Port, Badapadia, Kujang, PPL Township, etc.).
+      Actions should include: Repair bookings, CCTV installs, Laptop purchases, and claiming discounts.
+      
+      Return ONLY a JSON array in this format: 
+      [
+        {"name": "Firstname from Location", "action": "booked a Laptop Screen Fix", "time": "5 mins ago"},
+        ...
+      ]`;
+    } else {
+      // Future: Real data anonymization
+      prompt = `Anonymize and format these recent database activities into engaging social proof. 
+      (Currently fallback to synthesis mode).`;
+    }
+
+    try {
+      const chatCompletion = await client.chat.completions.create({
+        messages: [{ role: 'user', content: prompt }],
+        model: 'llama-3.1-8b-instant',
+        response_format: { type: 'json_object' }
+      });
+
+      // The response format might vary slightly depending on how LLM interprets "JSON array"
+      // Usually it wraps it in an object if forced json_object.
+      const content = JSON.parse(chatCompletion.choices[0].message.content);
+      return Array.isArray(content) ? content : (content.activities || content.proofs || Object.values(content)[0]);
+    } catch (error) {
+      console.error("Social Proof Generation Error:", error);
+      return [
+        { name: 'Rajesh from Paradip Port', action: 'booked a Screen Repair', time: '2 mins ago' },
+        { name: 'Soumya from Kujang', action: 'purchased a HP Laptop', time: '15 mins ago' }
+      ];
     }
   }
 }
