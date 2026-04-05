@@ -62,6 +62,7 @@ app.use('/api/pages', pagesRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiRoutes);
+// Sitemap — served at root for Google and via /api/ for proxy compatibility
 app.use('/sitemap.xml', sitemapRoutes);
 app.use('/api/sitemap.xml', sitemapRoutes);
 
