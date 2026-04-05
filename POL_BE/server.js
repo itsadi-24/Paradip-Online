@@ -63,6 +63,7 @@ app.use('/api/categories', categoriesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
+app.use('/api/sitemap.xml', sitemapRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
