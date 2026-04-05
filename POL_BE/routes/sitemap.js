@@ -8,7 +8,7 @@ const Blog = require('../models/Blog');
 const BASE_URL = 'https://paradiponline.com';
 
 /**
- * @route   GET /api/sitemap.xml
+ * @route   GET /sitemap.xml
  * @desc    Generate a dynamic sitemap.xml
  * @access  Public
  */
