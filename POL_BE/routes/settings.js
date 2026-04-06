@@ -8,7 +8,13 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.get('/', async (req, res) => {
   try {
     const settings = await Settings.getSettings();
-    res.json(settings);
+    const settingsObj = settings.toObject();
+    // Mask the Groq API Key for the frontend
+    if (settingsObj.groqApiKey) {
+      const key = settingsObj.groqApiKey;
+      settingsObj.groqApiKey = key.slice(0, 7) + "..." + key.slice(-5);
+    }
+    res.json(settingsObj);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -57,6 +63,7 @@ router.put('/', authMiddleware, async (req, res) => {
       if (req.body.aiSocialProofInterval !== undefined) settings.aiSocialProofInterval = req.body.aiSocialProofInterval;
       if (req.body.showAiCloseButton !== undefined) settings.showAiCloseButton = req.body.showAiCloseButton;
       if (req.body.aiSocialProofMode !== undefined) settings.aiSocialProofMode = req.body.aiSocialProofMode;
+      if (req.body.groqApiKey !== undefined) settings.groqApiKey = req.body.groqApiKey;
     }
     const updatedSettings = await settings.save();
     res.json(updatedSettings);

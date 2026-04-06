@@ -74,6 +74,10 @@ const settingsSchema = new mongoose.Schema(
       enum: ['synthesis', 'real_data'],
       default: 'synthesis',
     },
+    groqApiKey: {
+      type: String,
+      default: ""
+    }
   },
   {
     timestamps: true,

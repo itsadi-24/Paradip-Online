@@ -20,6 +20,7 @@ export interface Settings {
   aiSocialProofInterval?: number;
   showAiCloseButton?: boolean;
   aiSocialProofMode?: 'synthesis' | 'real_data';
+  groqApiKey?: string;
 }
 
 export const getSettings = () => get<Settings>('settings');

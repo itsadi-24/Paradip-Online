@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, Brain, Zap, Clock, Eye, Trash2, RefreshCw, X } from "lucide-react";
+import { Save, Brain, Zap, Clock, Eye, Trash2, RefreshCw, X, Lock, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,8 @@ const AiSettings = () => {
     enableAiSocialProof: true,
     aiSocialProofInterval: 90,
     showAiCloseButton: true,
-    aiSocialProofMode: 'synthesis' as 'synthesis' | 'real_data'
+    aiSocialProofMode: 'synthesis' as 'synthesis' | 'real_data',
+    groqApiKey: ""
   });
 
   const [saving, setSaving] = useState(false);
@@ -31,7 +32,8 @@ const AiSettings = () => {
         enableAiSocialProof: globalSettings.enableAiSocialProof ?? true,
         aiSocialProofInterval: globalSettings.aiSocialProofInterval ?? 90,
         showAiCloseButton: globalSettings.showAiCloseButton ?? true,
-        aiSocialProofMode: (globalSettings.aiSocialProofMode as any) || 'synthesis'
+        aiSocialProofMode: (globalSettings.aiSocialProofMode as any) || 'synthesis',
+        groqApiKey: globalSettings.groqApiKey || ""
       });
     }
   }, [globalSettings]);
@@ -39,7 +41,12 @@ const AiSettings = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateSettings(settings);
+      // Merge with global settings to satisfy the full interface
+      if (globalSettings) {
+        await updateSettings({ ...globalSettings, ...settings });
+      } else {
+        await updateSettings(settings as any);
+      }
       toast({
         title: "AI Analysis Complete",
         description: "Your conversion triggers have been optimized successfully.",
@@ -201,6 +208,75 @@ const AiSettings = () => {
                   onCheckedChange={(checked) => setSettings(prev => ({ ...prev, showAiCloseButton: checked }))}
                   className="data-[state=checked]:bg-blue-600"
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Groq Intelligence Configuration */}
+          <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden mt-8 border-l-4 border-indigo-500">
+            <CardHeader className="bg-indigo-50/30 pb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Zap className="h-5 w-5 text-indigo-600" />
+                  <CardTitle>Groq Intelligence Configuration</CardTitle>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-indigo-100 shadow-sm">
+                  <div className={cn("h-2 w-2 rounded-full", settings.groqApiKey ? "bg-emerald-500 animate-pulse" : "bg-rose-500")} />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    {settings.groqApiKey ? "Synced" : "Disconnected"}
+                  </span>
+                </div>
+              </div>
+              <CardDescription className="text-slate-500 font-medium">
+                Bridge the gap between Paradip retail data and LLAMA-3.3 high-speed inference.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-8 space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="api-key" className="text-sm font-bold text-slate-700 uppercase tracking-wider">Groq High-Speed API Key</Label>
+                  <span className="text-[9px] font-black text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">Encrypted in Transit</span>
+                </div>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-400">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <Input 
+                    id="api-key"
+                    type="password"
+                    value={settings.groqApiKey}
+                    onChange={(e) => setSettings(prev => ({ ...prev, groqApiKey: e.target.value }))}
+                    placeholder="gsk_************************************************"
+                    className="h-14 pl-12 pr-12 rounded-2xl border-slate-200 focus:border-indigo-500 font-mono text-sm tracking-widest bg-slate-50/30"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300">
+                      <RefreshCw className="h-4 w-4" />
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium italic">
+                  Paste your Groq Cloud production key above. This key powers SKU synthesis, SEO auto-pilot, and market intelligence triggers.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-indigo-50/50 border border-indigo-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                   <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center border border-indigo-100">
+                      <ShieldCheck className="h-5 w-5 text-indigo-600" />
+                   </div>
+                   <div>
+                      <p className="text-xs font-black text-indigo-900 uppercase">Identity Protection</p>
+                      <p className="text-[10px] text-indigo-800/60 font-medium">Full keys are never logged in plaintext or displayed in standard views.</p>
+                   </div>
+                </div>
+                <Button 
+                    variant="outline" 
+                    className="rounded-xl font-black uppercase text-[10px] tracking-widest bg-white border-indigo-100 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all h-10 px-6"
+                    onClick={() => {
+                        window.open('https://console.groq.com/keys', '_blank');
+                    }}
+                >
+                    Get API Key
+                </Button>
               </div>
             </CardContent>
           </Card>

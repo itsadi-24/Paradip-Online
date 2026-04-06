@@ -1,4 +1,5 @@
 const Groq = require('groq-sdk');
+const Settings = require('../models/Settings');
 
 class GroqService {
   constructor() {
@@ -9,11 +10,18 @@ class GroqService {
    * Lazily initialize or refresh the Groq client from environment variables
    * This ensures that as soon as the .env is updated, the service starts working
    */
-  _getClient() {
-    const apiKey = process.env.GROQ_API_KEY;
+  async _getClient() {
+    // 1. Try to get key from Database first
+    const settings = await Settings.getSettings();
+    let apiKey = settings.groqApiKey;
+
+    // 2. Fallback to Environment Variable if DB is empty or masked
+    if (!apiKey || apiKey.includes("...")) {
+      apiKey = process.env.GROQ_API_KEY;
+    }
     
     if (!apiKey || apiKey === 'your_groq_paid_api_key_here') {
-      throw new Error("GROQ_API_KEY is not configured or still using placeholder. Please check your .env file.");
+      throw new Error("GROQ_API_KEY is not configured or still using placeholder. Please check your AI Settings in the Dashboard.");
     }
 
     // Re-initialize if the key has changed or if first time
@@ -25,7 +33,7 @@ class GroqService {
   }
 
   async getMarketDiscovery(params) {
-    const client = this._getClient();
+    const client = await this._getClient();
 
     const { marketplace, category, brand, searchTerm, minPrice, maxPrice } = params;
 
@@ -85,7 +93,7 @@ class GroqService {
   }
 
   async generateProductContent(name) {
-    const client = this._getClient();
+    const client = await this._getClient();
     const prompt = `Act as a high-conversion eCommerce copywriter. Generate a premium product description and technical specification sheet for: "${name}".
     Return ONLY a JSON: {"description": "...", "specs": ["spec1", "spec2", ...]}`;
 
@@ -98,7 +106,7 @@ class GroqService {
   }
 
   async generateRepairRoadmap(ticketData) {
-    const client = this._getClient();
+    const client = await this._getClient();
     const prompt = `Act as a Senior IT Hardware Technician. Create a private troubleshooting roadmap for a ${ticketData.gadget.productName} (${ticketData.gadget.brand} ${ticketData.gadget.model}) with the following issue: "${ticketData.subject}".
     Return ONLY a JSON: {
       "probableCause": "...",
@@ -116,7 +124,7 @@ class GroqService {
   }
 
   async generateBlogContent(topic, category) {
-    const client = this._getClient();
+    const client = await this._getClient();
     const prompt = `Act as a Senior Tech Journalist. Write a full, SEO-optimized technical blog post for the Paradip market on the topic: "${topic}" in category "${category}".
     The post should include an H1 title, an engaging intro, several H2 sections, and a conclusion.
     Return ONLY a JSON: {"title": "...", "content": "Full markdown content here...", "excerpt": "...", "readTime": "x min read"}`;
@@ -131,7 +139,7 @@ class GroqService {
 
   async getBrandDiscovery(category) {
     try {
-      const client = this._getClient();
+      const client = await this._getClient();
       const prompt = `List the top 8 most reputed and famous brands for the product category: "${category}" in the Indian market. Return ONLY a JSON object: {"brands": ["Brand1", "Brand2", ...]} `;
 
       const chatCompletion = await client.chat.completions.create({
@@ -147,7 +155,7 @@ class GroqService {
   }
 
   async generateSocialProof(mode = 'synthesis') {
-    const client = this._getClient();
+    const client = await this._getClient();
     
     let prompt = "";
     if (mode === 'synthesis') {
