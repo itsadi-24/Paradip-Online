@@ -15,6 +15,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { getBlogs, getBlogBySlug, BlogPost as BlogPostType } from '@/api/blogsApi';
+import SEO from '@/components/SEO';
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -97,31 +98,28 @@ const BlogPost = () => {
     );
   }
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "image": post.image,
+    "datePublished": post.date,
+    "author": [{
+      "@type": "Organization",
+      "name": post.author,
+      "url": "https://www.paradiponline.com"
+    }],
+    "description": post.excerpt
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
-      <Helmet>
-        <title>{post.title} | Paradip Online Blog</title>
-        <meta name="description" content={post.excerpt} />
-        <link rel="canonical" href={`https://paradiponline.com/blog/${post.slug}`} />
-        <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.excerpt} />
-        <meta property="og:image" content={post.image} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": post.title,
-            "image": post.image,
-            "datePublished": post.date,
-            "author": [{
-              "@type": "Organization",
-              "name": post.author,
-              "url": "https://paradiponline.com"
-            }],
-            "description": post.excerpt
-          })}
-        </script>
-      </Helmet>
+      <SEO 
+        title={post.title}
+        description={post.excerpt}
+        image={post.image}
+        schema={schema}
+      />
 
       {/* Hero Section */}
       <section className="relative py-16 bg-slate-900 overflow-hidden">

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const testimonials = [
   {
@@ -53,46 +54,45 @@ export default function ComputerRepair() {
 
   const salesPhone = contact.salesPhone.replace(/[\s-+]/g, '');
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Computer & Laptop Repair",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Paradip Online Computer Service",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Unit-1, Badapadia, Vijay Market",
+        "addressLocality": "Paradip",
+        "addressRegion": "Odisha",
+        "addressCountry": "IN"
+      }
+    },
+    "areaServed": ["Paradip", "Kujang", "Ersama", "Jagatsinghpur"],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Computer Repair Tiers",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Basic Diagnosis" }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Component Level Repair" }
+        }
+      ]
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen pb-20">
-      <Helmet>
-        <title>Fast Computer & Laptop Repair in Paradip | Guaranteed Support</title>
-        <meta name="description" content="Stuck with a slow laptop or broken screen in Paradip? Get expert hardware repair, chip-level motherboard servicing, and SSD upgrades at Vijay Market. 100% genuine parts." />
-        <link rel="canonical" href="https://paradiponline.com/services/computer-and-laptop-repair" />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            "name": "Computer & Laptop Repair",
-            "provider": {
-              "@type": "LocalBusiness",
-              "name": "Paradip Online Computer Service",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Unit-1, Badapadia, Vijay Market",
-                "addressLocality": "Paradip",
-                "addressRegion": "Odisha",
-                "addressCountry": "IN"
-              }
-            },
-            "areaServed": ["Paradip", "Kujang", "Ersama", "Jagatsinghpur"],
-            "hasOfferCatalog": {
-              "@type": "OfferCatalog",
-              "name": "Computer Repair Tiers",
-              "itemListElement": [
-                {
-                  "@type": "Offer",
-                  "itemOffered": { "@type": "Service", "name": "Basic Diagnosis" }
-                },
-                {
-                  "@type": "Offer",
-                  "itemOffered": { "@type": "Service", "name": "Component Level Repair" }
-                }
-              ]
-            }
-          })}
-        </script>
-      </Helmet>
+      <SEO 
+        title="Fast Computer & Laptop Repair in Paradip | Guaranteed Support"
+        description="Stuck with a slow laptop or broken screen in Paradip? Get expert hardware repair, chip-level motherboard servicing, and SSD upgrades at Vijay Market. 100% genuine parts."
+        schema={schema}
+      />
 
       {/* 1. Dynamic Hero Section */}
       <section className="relative py-24 lg:py-32 overflow-hidden bg-slate-900 leading-tight">

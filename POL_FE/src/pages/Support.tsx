@@ -28,10 +28,22 @@ import {
   Ticket,
   LifeBuoy,
   ArrowRight,
+  ShieldCheck,
+  ChevronRight,
+  HeadphonesIcon,
+  AlertCircle,
+  Laptop,
+  Wrench,
+  Package,
+  Truck,
+  CheckCircle,
+  Loader2,
+  CheckCircle2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 import { trackTicket, type Ticket as TicketType } from '@/api/ticketsApi';
 import {
   Dialog,
@@ -40,7 +52,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, AlertCircle, Laptop, ShieldCheck, Wrench, Package, Truck, CheckCircle, Loader2 } from 'lucide-react';
 
 const faqs = [
   {
@@ -64,7 +75,7 @@ const faqs = [
     answer: 'Yes, we provide Car GPS tracker Paradip and Truck GPS installation. Our solutions include RTO approved VLT devices, AIS 140 GPS Odisha, and comprehensive Fleet management software Paradip.',
   },
   {
-    question: 'Can I track the status of my repair?',
+    question: 'Can i track the status of my repair?',
     answer: 'Yes! Use the search bar at the top of this Support page with your Ticket ID to get real-time status updates and technician notes on your device.',
   },
 ];
@@ -136,27 +147,26 @@ const Support = () => {
 
   const isTicketingEnabled = settings?.enableTicketing ?? true;
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
-      <Helmet>
-        <title>IT Support & FAQs | Paradip Online</title>
-        <meta name="description" content="Get 24/7 IT support, ticket tracking, and answers to common questions about laptop repair, CCTV installation, and IT AMC in Paradip." />
-        <link rel="canonical" href="https://paradiponline.com/support" />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": faqs.map(faq => ({
-              "@type": "Question",
-              "name": faq.question,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
-              }
-            }))
-          })}
-        </script>
-      </Helmet>
+      <SEO 
+        title="IT Support & FAQs | Paradip Online"
+        description="Get 24/7 IT support, ticket tracking, and answers to common questions about laptop repair, CCTV installation, and IT AMC in Paradip."
+        schema={schema}
+      />
       {/* 1. Hero Section: Search Centric */}
       <section className="relative py-20 bg-slate-900 overflow-hidden">
         {/* Abstract Background Shapes */}

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const networkPlans = [
   {
@@ -41,11 +42,10 @@ export default function NetworkSetup() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      <Helmet>
-        <title>Professional Network & Wi-Fi Setup in Paradip | Fiber & Wireless</title>
-        <meta name="description" content="Tired of slow Wi-Fi? Paradip Online provides enterprise networking, fiber optic cabling, and outdoor wireless bridges for homes and industries in Paradip Port area." />
-        <link rel="canonical" href="https://paradiponline.com/services/network-and-wifi-setup" />
-      </Helmet>
+      <SEO 
+        title="Professional Network & Wi-Fi Setup in Paradip | Fiber & Wireless"
+        description="Tired of slow Wi-Fi? Paradip Online provides enterprise networking, fiber optic cabling, and outdoor wireless bridges for homes and industries in Paradip Port area."
+      />
 
       {/* 1. Connectivity Hero */}
       <section className="relative py-24 lg:py-32 overflow-hidden bg-slate-900 border-b-8 border-indigo-600">

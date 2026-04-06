@@ -1,9 +1,14 @@
 // src/pages/PrivacyPolicy.tsx
 import React from "react";
+import SEO from "@/components/SEO";
 
 const PrivacyPolicy: React.FC = () => {
   return (
     <main className="bg-gradient-subtle min-h-screen">
+      <SEO 
+        title="Privacy Policy | Paradip Online"
+        description="Our privacy policy explains how we collect and use your information when you use our website and services."
+      />
       <div className="max-w-5xl mx-auto px-4 py-10 lg:py-16">
         {/* Page heading */}
         <header className="mb-8 lg:mb-10">

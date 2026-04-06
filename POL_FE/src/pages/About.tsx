@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Timeline, TimelineContent, TimelineDot, TimelineItem } from '@/components/ui/timeline';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const stats = [
   { value: '15+', label: 'Years Experience' },
@@ -101,6 +102,10 @@ const About = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen">
+      <SEO 
+        title="About Us | Paradip Online Computer Services"
+        description="Learn about Paradeep Online Computer Services, the leading IT backbone of Paradip since 2010. Expert computer repairs, custom builds, and industrial IT solutions."
+      />
       {/* 1. Hero Section with Background Pattern */}
       <section className="relative py-20 lg:py-32 bg-slate-950 overflow-hidden">
         {/* Abstract Background */}

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const buildTiers = [
   {
@@ -44,11 +45,10 @@ export default function CustomPcBuilds() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      <Helmet>
-        <title>Premium Custom PC Builds in Paradip | Gaming & Workstations</title>
-        <meta name="description" content="Custom Gaming PCs and Professional Workstations in Paradip. Personalized component picking, expert assembly, and 1-year on-site support by Paradip Online." />
-        <link rel="canonical" href="https://paradiponline.com/services/custom-pc-builds" />
-      </Helmet>
+      <SEO 
+        title="Premium Custom PC Builds in Paradip | Gaming & Workstations"
+        description="Custom Gaming PCs and Professional Workstations in Paradip. Personalized component picking, expert assembly, and 1-year on-site support by Paradip Online."
+      />
 
       {/* 1. Neon Hero Section */}
       <section className="relative py-24 lg:py-32 overflow-hidden bg-slate-900">

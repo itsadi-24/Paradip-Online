@@ -7,6 +7,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { CTASection } from "@/components/home/CTASection";
 import { pagesApi, Page } from "@/api/pagesApi";
 import { useSettings } from "@/contexts/SettingsContext";
+import SEO from "@/components/SEO";
 
 const Home = () => {
   const { settings } = useSettings();
@@ -47,49 +48,48 @@ const Home = () => {
     );
   }
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Paradip Online",
+    "image": "https://www.paradiponline.com/POL_LOGO.svg",
+    "@id": "https://www.paradiponline.com",
+    "url": "https://www.paradiponline.com",
+    "telephone": settings?.contactDefaults?.salesPhone || "+91-9583839432",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Paradip",
+      "addressLocality": "Paradip",
+      "postalCode": "754142",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 20.2706,
+      "longitude": 86.6664
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "09:00",
+      "closes": "20:00"
+    }
+  };
+
   return (
     <>
-      <Helmet>
-        <title>Paradip Online | Best Computer Shop & Laptop Repair in Paradip</title>
-        <meta name="description" content="Looking for the best computer shop in Paradip (Paradeep)? Paradip Online offers premium laptops, desktops, and expert repair services. Certified technicians, quick turnaround." />
-        <link rel="canonical" href="https://paradiponline.com/" />
-        <script type="application/ld+json">
-{JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Paradip Online",
-  "image": "https://paradiponline.com/POL_LOGO.svg",
-  "@id": "https://paradiponline.com",
-  "url": "https://paradiponline.com",
-  "telephone": settings?.contactDefaults?.salesPhone || "+91-9583839432",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Paradip",
-    "addressLocality": "Paradip",
-    "postalCode": "754142",
-    "addressCountry": "IN"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": 20.2706,
-    "longitude": 86.6664
-  },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ],
-    "opens": "09:00",
-    "closes": "20:00"
-  }
-})}
-        </script>
-      </Helmet>
+      <SEO 
+        title="Paradip Online | Best Computer Shop & Laptop Repair in Paradip"
+        description="Looking for the best computer shop in Paradip (Paradeep)? Paradip Online offers premium laptops, desktops, and expert repair services. Certified technicians, quick turnaround."
+        schema={schema}
+      />
       <HeroSection
         slides={heroSection?.enabled ? heroSection.content.slides : []}
         features={heroSection?.enabled ? heroSection.content.features : []}

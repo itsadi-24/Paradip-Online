@@ -27,6 +27,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { getServices, type Service } from '@/api/servicesApi';
 import { pagesApi, Page } from "@/api/pagesApi";
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 // Helper function to map icon names to icon components
 const getIconComponent = (iconName: string): LucideIcon => {
@@ -119,29 +120,28 @@ const Services = () => {
     );
   }
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "IT Repair & Maintenance Services",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Paradip Online"
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": "Paradip"
+    },
+    "serviceType": "Computer Repair, Laptop Repair, CCTV Installation, IT AMC"
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
-      <Helmet>
-        <title>{pageData?.sections.find(s => s.id === 'seo')?.content?.metaTitle || "Professional IT Services in Paradip"}</title>
-        <meta name="description" content={pageData?.sections.find(s => s.id === 'seo')?.content?.metaDescription || "Expert IT and repair services in Paradip."} />
-        <link rel="canonical" href="https://paradiponline.com/services" />
-        <script type="application/ld+json">
-{JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": "IT Repair & Maintenance Services",
-  "provider": {
-    "@type": "LocalBusiness",
-    "name": "Paradip Online"
-  },
-  "areaServed": {
-    "@type": "City",
-    "name": "Paradip"
-  },
-  "serviceType": "Computer Repair, Laptop Repair, CCTV Installation, IT AMC"
-})}
-        </script>
-      </Helmet>
+      <SEO 
+        title={pageData?.sections.find(s => s.id === 'seo')?.content?.metaTitle || "Professional IT Services in Paradip"}
+        description={pageData?.sections.find(s => s.id === 'seo')?.content?.metaDescription || "Expert IT and repair services in Paradip."}
+        schema={schema}
+      />
       {/* 1. Hero Section - Simplified & Professional */}
       <section className="relative py-20 lg:py-32 bg-slate-900 border-b border-white/5 overflow-hidden">
         {/* Subtle Background Pattern */}

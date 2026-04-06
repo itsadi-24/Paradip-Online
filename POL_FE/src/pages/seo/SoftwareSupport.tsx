@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const softServices = [
   {
@@ -47,11 +48,10 @@ export default function SoftwareSupport() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      <Helmet>
-        <title>Professional Software Installation & Windows Repair in Paradip</title>
-        <meta name="description" content="Is your computer slow? Get expert Windows installation, virus removal, and official software setup in Paradip. Remote and on-site software support by Paradip Online." />
-        <link rel="canonical" href="https://paradiponline.com/services/software-installation-support" />
-      </Helmet>
+      <SEO 
+        title="Professional Software Installation & Windows Repair in Paradip"
+        description="Is your computer slow? Get expert Windows installation, virus removal, and official software setup in Paradip. Remote and on-site software support by Paradip Online."
+      />
 
       {/* 1. Impact Hero */}
       <section className="relative py-24 bg-slate-900 overflow-hidden">

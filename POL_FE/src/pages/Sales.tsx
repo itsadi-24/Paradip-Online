@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn, getImageUrl } from "@/lib/utils";
 import { useSettings } from "@/contexts/SettingsContext";
+import SEO from "@/components/SEO";
 
 const categories = [
   { id: "all", name: "All Products" },
@@ -127,11 +128,10 @@ const Sales = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{pageData?.sections.find(s => s.id === 'seo')?.content?.metaTitle || "Computer Shop in Paradip | Laptops & Accessories"}</title>
-        <meta name="description" content={pageData?.sections.find(s => s.id === 'seo')?.content?.metaDescription || "Best computer shop in Paradip. Wide selection of laptops, desktops, CCTVs, and accessories."} />
-        <link rel="canonical" href="https://paradiponline.com/sales" />
-      </Helmet>
+      <SEO 
+        title={pageData?.sections.find(s => s.id === 'seo')?.content?.metaTitle || "Computer Shop in Paradip | Laptops & Accessories"}
+        description={pageData?.sections.find(s => s.id === 'seo')?.content?.metaDescription || "Best computer shop in Paradip. Wide selection of laptops, desktops, CCTVs, and accessories."}
+      />
       <section className="gradient-hero py-16">
         <div className="container mx-auto px-4 text-center">
           {heroSection?.content.badge && (

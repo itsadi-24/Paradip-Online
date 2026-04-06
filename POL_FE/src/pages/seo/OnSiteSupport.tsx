@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const siteServices = [
   {
@@ -41,11 +42,10 @@ export default function OnSiteSupport() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      <Helmet>
-        <title>Professional On-Site IT Support in Paradip | Home & Business</title>
-        <meta name="description" content="Get expert IT support at your doorstep in Paradip. We provide on-site computer repair, office AMC, and server maintenance for businesses in Odisha." />
-        <link rel="canonical" href="https://paradiponline.com/services/on-site-it-support" />
-      </Helmet>
+      <SEO 
+        title="Professional On-Site IT Support in Paradip | Home & Business"
+        description="Get expert IT support at your doorstep in Paradip. We provide on-site computer repair, office AMC, and server maintenance for businesses in Odisha."
+      />
 
       {/* 1. Doorstep Hero */}
       <section className="relative py-24 lg:py-32 bg-slate-50 overflow-hidden">

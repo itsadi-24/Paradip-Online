@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const features = [
   {
@@ -42,11 +43,10 @@ export default function CctvSolutions() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      <Helmet>
-        <title>Professional CCTV & Security Systems in Paradip | IP Cameras</title>
-        <meta name="description" content="Secure your home or business in Paradip with high-definition CCTV, IP cameras, and biometric systems. Expert installation and 1-year warrant by Paradip Online." />
-        <link rel="canonical" href="https://paradiponline.com/services/cctv-and-security-solutions" />
-      </Helmet>
+      <SEO 
+        title="Professional CCTV & Security Systems in Paradip | IP Cameras"
+        description="Secure your home or business in Paradip with high-definition CCTV, IP cameras, and biometric systems. Expert installation and 1-year warrant by Paradip Online."
+      />
 
       {/* 1. Surveillance Hero */}
       <section className="relative py-24 lg:py-32 overflow-hidden bg-slate-900 border-b-8 border-red-600">

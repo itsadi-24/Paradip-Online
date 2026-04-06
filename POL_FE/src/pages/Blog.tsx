@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getBlogs, BlogPost } from '@/api/blogsApi';
+import SEO from '@/components/SEO';
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -70,11 +71,10 @@ const Blog = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <Helmet>
-        <title>Tech Blog & Buying Guides | Paradip Online</title>
-        <meta name="description" content="Discover expert computer troubleshooting tips, PC buying guides, and enterprise IT solutions at Paradip Online's official tech blog." />
-        <link rel="canonical" href="https://paradiponline.com/blog" />
-      </Helmet>
+      <SEO 
+        title="Tech Blog & Buying Guides | Paradip Online"
+        description="Discover expert computer troubleshooting tips, PC buying guides, and enterprise IT solutions at Paradip Online's official tech blog."
+      />
       {/* 1. Hero Section */}
       <section className="relative py-20 bg-slate-900 overflow-hidden isolate">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>

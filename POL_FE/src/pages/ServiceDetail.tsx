@@ -19,6 +19,7 @@ import { cn, getImageUrl } from '@/lib/utils';
 import { FaWhatsapp } from 'react-icons/fa';
 import * as Icons from 'lucide-react';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const ServiceDetail = () => {
     const { settings } = useSettings();
@@ -63,37 +64,36 @@ const ServiceDetail = () => {
 
     const IconComponent = (Icons as any)[service.icon] || Icons.Wrench;
 
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": service.title,
+        "description": service.description || `Professional ${service.title} in Paradip by certified experts.`,
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Paradip Online"
+        },
+        "areaServed": {
+            "@type": "City",
+            "name": "Paradip"
+        },
+        "offers": {
+            "@type": "Offer",
+            "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "priceType": "https://schema.org/Minimum",
+                "priceCurrency": "INR"
+            }
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white">
-            <Helmet>
-                <title>{service.title} | Paradip Online</title>
-                <meta name="description" content={service.description || `Professional ${service.title} in Paradip by certified experts. Fast and reliable.`} />
-                <link rel="canonical" href={`https://paradiponline.com/service/${service.id}`} />
-                <script type="application/ld+json">
-{JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": service.title,
-  "description": service.description || `Professional ${service.title} in Paradip by certified experts.`,
-  "provider": {
-    "@type": "LocalBusiness",
-    "name": "Paradip Online"
-  },
-  "areaServed": {
-    "@type": "City",
-    "name": "Paradip"
-  },
-  "offers": {
-    "@type": "Offer",
-    "priceSpecification": {
-      "@type": "UnitPriceSpecification",
-      "priceType": "https://schema.org/Minimum",
-      "priceCurrency": "INR"
-    }
-  }
-})}
-                </script>
-            </Helmet>
+            <SEO 
+                title={service.title}
+                description={service.description || `Professional ${service.title} in Paradip by certified experts. Fast and reliable.`}
+                schema={schema}
+            />
             {/* Breadcrumb / Back */}
             <div className="bg-slate-50 border-b border-slate-100">
                 <div className="container mx-auto px-4 py-4">

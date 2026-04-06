@@ -12,6 +12,7 @@ import { Phone, Check, Truck, ShieldCheck, Loader2, ChevronLeft, ChevronRight, Z
 import { cn, getImageUrl } from '@/lib/utils';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useSettings } from '@/contexts/SettingsContext';
+import SEO from '@/components/SEO';
 
 const ProductDetail = () => {
   const { settings } = useSettings();
@@ -83,35 +84,34 @@ const ProductDetail = () => {
   const images = getProductImages(product);
   const hasMultipleImages = images.length > 1;
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": images[0],
+    "description": product.description || `Buy ${product.name} at the best price in Paradip.`,
+    "sku": product.id,
+    "offers": {
+      "@type": "Offer",
+      "url": `https://www.paradiponline.com/product/${product.id}`,
+      "priceCurrency": "INR",
+      "price": product.price,
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Paradip Online"
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
-      <Helmet>
-        <title>{product.name} | Paradip Online</title>
-        <meta name="description" content={product.description || `Buy ${product.name} at the best price in Paradip. Fast delivery and official warranty.`} />
-        <link rel="canonical" href={`https://paradiponline.com/product/${product.id}`} />
-        <script type="application/ld+json">
-{JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": product.name,
-  "image": images[0],
-  "description": product.description || `Buy ${product.name} at the best price in Paradip.`,
-  "sku": product.id,
-  "offers": {
-    "@type": "Offer",
-    "url": `https://paradiponline.com/product/${product.id}`,
-    "priceCurrency": "INR",
-    "price": product.price,
-    "itemCondition": "https://schema.org/NewCondition",
-    "availability": product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    "seller": {
-      "@type": "Organization",
-      "name": "Paradip Online"
-    }
-  }
-})}
-        </script>
-      </Helmet>
+      <SEO 
+        title={product.name}
+        description={product.description || `Buy ${product.name} at the best price in Paradip. Fast delivery and official warranty.`}
+        schema={schema}
+      />
       <div className="bg-secondary/30 border-b border-border/50">
         <div className="container mx-auto px-4 py-4">
           <Link to="/sales" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
