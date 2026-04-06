@@ -1,4 +1,4 @@
-import { get, put, patch, ApiResponse } from './apiClient';
+import { get, put, patch, del, ApiResponse } from './apiClient';
 
 export interface PageSection {
     id: string;
@@ -36,6 +36,6 @@ export const pagesApi = {
     },
 
     deletePage: async (name: string): Promise<ApiResponse<void>> => {
-        return del<void>(`pages/${name}`);
+        return del<void>(`pages/${encodeURIComponent(name.toLowerCase())}`);
     }
 };

@@ -96,22 +96,26 @@ router.patch('/:name/sections/:sectionId', authMiddleware, async (req, res) => {
 router.delete('/:name', authMiddleware, async (req, res) => {
     try {
         const name = req.params.name.toLowerCase();
+        console.log(`[DELETE] Attempting to delete page: ${name}`);
         
         // Safety guard: prevent deletion of core pages
         const corePages = ['home', 'products', 'services'];
         if (corePages.includes(name)) {
+            console.warn(`[DELETE] Access Denied: Cannot delete core system page: ${name}`);
             return res.status(403).json({ message: 'Cannot delete core system pages' });
         }
 
         const page = await Page.findOneAndDelete({ name });
         
         if (!page) {
+            console.error(`[DELETE] Error: Page '${name}' not found in database.`);
             return res.status(404).json({ message: 'Page not found' });
         }
 
+        console.log(`[DELETE] Success: Page '${name}' deleted successfully.`);
         res.json({ message: `Page '${name}' deleted successfully` });
     } catch (error) {
-        console.error('Delete page error:', error);
+        console.error('[DELETE] Critical Error during page deletion:', error);
         res.status(500).json({ message: 'Server error deleting page' });
     }
 });
