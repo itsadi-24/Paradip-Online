@@ -33,5 +33,9 @@ export const pagesApi = {
         data: { content?: any; enabled?: boolean }
     ): Promise<ApiResponse<PageSection>> => {
         return patch<PageSection>(`pages/${pageName}/sections/${sectionId}`, data);
+    },
+
+    deletePage: async (name: string): Promise<ApiResponse<void>> => {
+        return del<void>(`pages/${name}`);
     }
 };

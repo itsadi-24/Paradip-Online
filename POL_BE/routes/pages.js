@@ -90,4 +90,30 @@ router.patch('/:name/sections/:sectionId', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   DELETE /api/pages/:name
+// @desc    Delete a page (only non-core pages)
+// @access  Private (Admin)
+router.delete('/:name', authMiddleware, async (req, res) => {
+    try {
+        const name = req.params.name.toLowerCase();
+        
+        // Safety guard: prevent deletion of core pages
+        const corePages = ['home', 'products', 'services'];
+        if (corePages.includes(name)) {
+            return res.status(403).json({ message: 'Cannot delete core system pages' });
+        }
+
+        const page = await Page.findOneAndDelete({ name });
+        
+        if (!page) {
+            return res.status(404).json({ message: 'Page not found' });
+        }
+
+        res.json({ message: `Page '${name}' deleted successfully` });
+    } catch (error) {
+        console.error('Delete page error:', error);
+        res.status(500).json({ message: 'Server error deleting page' });
+    }
+});
+
 module.exports = router;
