@@ -147,18 +147,35 @@ const Support = () => {
 
   const isTicketingEnabled = settings?.enableTicketing ?? true;
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
+  const schema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Paradip Online Support",
+      "image": "https://www.paradiponline.com/POL_LOGO.svg",
+      "url": "https://www.paradiponline.com/support",
+      "telephone": contact.supportPhone,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Unit -1, Badapadia, Vijay Market",
+        "addressLocality": "Paradip",
+        "postalCode": "754142",
+        "addressCountry": "IN"
       }
-    }))
-  };
+    }
+  ];
 
   return (
     <div className="bg-slate-50 min-h-screen">

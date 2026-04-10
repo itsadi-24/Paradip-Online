@@ -100,11 +100,28 @@ const About = () => {
     complaintsPhone: "+91-7008700609"
   };
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Paradip Online",
+    "image": "https://www.paradiponline.com/POL_LOGO.svg",
+    "url": "https://www.paradiponline.com/about",
+    "telephone": contact.salesPhone,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Unit -1, Badapadia, Vijay Market",
+      "addressLocality": "Paradip",
+      "postalCode": "754142",
+      "addressCountry": "IN"
+    }
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen">
       <SEO 
         title="About Us | Paradip Online Computer Services"
         description="Learn about Paradeep Online Computer Services, the leading IT backbone of Paradip since 2010. Expert computer repairs, custom builds, and industrial IT solutions."
+        schema={schema}
       />
       {/* 1. Hero Section with Background Pattern */}
       <section className="relative py-20 lg:py-32 bg-slate-950 overflow-hidden">
